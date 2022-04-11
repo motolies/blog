@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.hvy.blog.mapper.ContentMapper">
+
+    <select id="findIdsByConditions" resultType="int">
+        SELECT SQL_CALC_FOUND_ROWS C.ID
+        FROM CONTENT AS C
+        JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
+        WHERE 1 = 1
+        <if test='isAdmin == false'>
+            AND C.ISPUBLIC = 1
+        </if>
+        <if test='isAnd == true'>
+            AND
+            <foreach collection="conditions" index="index" item="con" open="(" separator=" AND " close=")">
+                <choose>
+                    <when test='searchType.equals("TITLE")'>
+                        C.SUBJECT LIKE CONCAT('%', #{con}, '%')
+                    </when>
+                    <when test='searchType.equals("CONTENT")'>
+                        C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
+                    </when>
+                    <otherwise>
+                        C.SUBJECT LIKE CONCAT('%', #{con}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
+                    </otherwise>
+                </choose>
+            </foreach>
+        </if>
+        <if test='isAnd == false'>
+            AND
+            <foreach collection="conditions" index="index" item="con" open="(" separator=" OR " close=")">
+                <choose>
+                    <when test='searchType.equals("TITLE")'>
+                        C.SUBJECT LIKE CONCAT('%', #{con}, '%')
+                    </when>
+                    <when test='searchType.equals("CONTENT")'>
+                        C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
+                    </when>
+                    <otherwise>
+                        C.SUBJECT LIKE CONCAT('%', #{con}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
+                    </otherwise>
+                </choose>
+            </foreach>
+        </if>
+
+    </select>
+
+</mapper>

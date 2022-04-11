@@ -1,6 +1,9 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Content;
+import kr.hvy.blog.mapper.ContentMapper;
+import kr.hvy.blog.mapper.CountMapper;
+import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.util.AuthorizationProvider;
 import kr.hvy.blog.util.MultipleResultSet;
@@ -16,6 +19,9 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service("contentService")
@@ -25,6 +31,10 @@ public class ContentServiceImpl implements ContentService {
     private EntityManager em;
 
     private final ContentRepository contentRepository;
+
+    private final CountMapper countMapper;
+
+    private final ContentMapper contentMapper;
 
     public Content findById(int id) {
         return contentRepository.findById(id).orElse(null);
@@ -256,6 +266,37 @@ public class ContentServiceImpl implements ContentService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Page<Integer> findIdsByConditions(boolean isAdmin, String searchType, String searchText, String categoryId, int page, int pageSize, String orderStr) {
+        // tag =
+        //########### 아래가 준비된 것
+        // admin =
+        // isAnd = else or
+        // searchText = &(and), |(or)
+        // searchText array
+        // searchType = TITLE, CONTENT, FULL
+        // categoryId =
+
+        boolean isAnd = searchText.contains("&");
+        List<String> tmpConditions = isAnd ? Arrays.asList(searchText.split("&")) : Arrays.asList(searchText.split("\\|"));
+        List<String> conditions = tmpConditions.stream().map(String::trim).collect(Collectors.toList());
+
+        List<Integer> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, page, pageSize, orderStr);
+        int count = countMapper.getTotalCount();
+
+        Page<Integer> pager = new Page<>();
+        pager.setList(list);
+        pager.setPage(page);
+        pager.setPageSize(pageSize);
+        pager.setTotalCount(count);
+
+        return pager;
+
+    }
+
+    public List<Content> findContentsByIdInOrderByCreateDateDesc(List<Integer> ids) {
+        return contentRepository.findContentsByIdInOrderByCreateDateDesc(ids);
     }
 
 

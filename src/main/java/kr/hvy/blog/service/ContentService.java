@@ -1,8 +1,11 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Content;
+import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.util.MultipleResultSet;
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface ContentService {
     Content findById(int id);
@@ -26,4 +29,9 @@ public interface ContentService {
     void setMain(int id);
 
     void deleteTempContent();
+
+    Page<Integer> findIdsByConditions(boolean isAdmin, String searchType, String searchText, String categoryId, int page, int pageSize, String orderStr);
+
+    List<Content> findContentsByIdInOrderByCreateDateDesc(List<Integer> ids);
+
 }
