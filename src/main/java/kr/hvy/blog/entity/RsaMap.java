@@ -1,4 +1,4 @@
-package kr.hvy.blog.model;
+package kr.hvy.blog.entity;
 
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import kr.hvy.blog.util.Common;

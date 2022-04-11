@@ -1,4 +1,4 @@
-package kr.hvy.blog.model;
+package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;

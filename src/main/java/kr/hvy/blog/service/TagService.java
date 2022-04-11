@@ -1,6 +1,6 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Tag;
+import kr.hvy.blog.entity.Tag;
 
 import java.util.List;
 

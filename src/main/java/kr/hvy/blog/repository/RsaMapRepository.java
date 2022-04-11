@@ -1,6 +1,6 @@
 package kr.hvy.blog.repository;
 
-import kr.hvy.blog.model.RsaMap;
+import kr.hvy.blog.entity.RsaMap;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

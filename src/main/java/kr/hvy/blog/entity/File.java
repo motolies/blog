@@ -1,4 +1,4 @@
-package kr.hvy.blog.model;
+package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,7 +19,7 @@ public class File {
 
     @Id
     @Column(columnDefinition = "BINARY(16)", name = "Id")
-    @GenericGenerator(name = "customUuid", strategy = "kr.hvy.blog.model.util.CustomUUIDGenerator")
+    @GenericGenerator(name = "customUuid", strategy = "kr.hvy.blog.entity.provider.CustomUUIDProvider")
     @GeneratedValue(generator = "customUuid")
     private byte[] id;
 

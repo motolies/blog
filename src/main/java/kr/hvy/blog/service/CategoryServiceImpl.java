@@ -1,10 +1,9 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Category;
+import kr.hvy.blog.entity.Category;
 import kr.hvy.blog.repository.CategoryRepository;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

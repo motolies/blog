@@ -1,6 +1,6 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.File;
+import kr.hvy.blog.entity.File;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 

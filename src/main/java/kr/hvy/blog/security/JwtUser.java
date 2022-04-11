@@ -11,13 +11,15 @@ import java.util.Collection;
 @Getter
 public class JwtUser implements UserDetails {
 
+    private final byte[] id;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
 
 
-    public JwtUser(String username, String password, Collection<? extends GrantedAuthority> authorities, boolean enabled) {
+    public JwtUser(byte[] id, String username, String password, Collection<? extends GrantedAuthority> authorities, boolean enabled) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;

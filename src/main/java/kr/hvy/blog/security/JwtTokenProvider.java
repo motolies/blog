@@ -2,7 +2,8 @@ package kr.hvy.blog.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import kr.hvy.blog.model.User;
+import kr.hvy.blog.entity.User;
+import kr.hvy.blog.util.Common;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -90,10 +91,11 @@ public class JwtTokenProvider {
 
     // JWT 토큰에서 인증 정보 조회(DB 조회하지 않고 강제주입)
     public Authentication getAuthenticationWithoutDB(String token) {
-        String userName = getClaimsById(token, "userName");
+        String userId = getUserHexId(token);
+        byte[] uid = Common.Base64StringIdToBinary(userId);
         Set<GrantedAuthority> roles = getAuthoritiesFromToken(token);
 
-        JwtUser user = new JwtUser(userName, "", roles, true);
+        JwtUser user = new JwtUser(uid, "", "", roles, true);
         return new UsernamePasswordAuthenticationToken((UserDetails) user, "", user.getAuthorities());
     }
 
@@ -114,7 +116,7 @@ public class JwtTokenProvider {
         return auth;
     }
 
-    // 유저 이름 추출
+
     public String getUserHexId(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }

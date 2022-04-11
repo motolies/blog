@@ -2,9 +2,9 @@ package kr.hvy.blog.service;
 
 
 import kr.hvy.blog.exception.AuthenticationException;
-import kr.hvy.blog.model.Authority;
-import kr.hvy.blog.model.AuthorityName;
-import kr.hvy.blog.model.User;
+import kr.hvy.blog.entity.Authority;
+import kr.hvy.blog.entity.AuthorityName;
+import kr.hvy.blog.entity.User;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.security.JwtUserFactory;
 import lombok.RequiredArgsConstructor;

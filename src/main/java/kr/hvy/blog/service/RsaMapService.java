@@ -1,6 +1,6 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.RsaMap;
+import kr.hvy.blog.entity.RsaMap;
 
 public interface RsaMapService {
 

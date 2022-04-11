@@ -1,4 +1,4 @@
-package kr.hvy.blog.model.util;
+package kr.hvy.blog.entity.provider;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 @Slf4j
-public class CustomUUIDGenerator implements IdentifierGenerator, Configurable {
+public class CustomUUIDProvider implements IdentifierGenerator, Configurable {
     @Override
     public void configure(Type type, Properties params, ServiceRegistry serviceRegistry) throws MappingException {
     }

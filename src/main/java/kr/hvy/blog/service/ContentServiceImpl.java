@@ -1,8 +1,8 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Content;
+import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.repository.ContentRepository;
-import kr.hvy.blog.util.AuthorizationHelper;
+import kr.hvy.blog.util.AuthorizationProvider;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
@@ -43,7 +43,7 @@ public class ContentServiceImpl implements ContentService {
     public Content findByMain(Authentication auth) {
         Content content = contentRepository.findByIsMainTrue();
 
-        if (content == null || (!content.isPublic() && !AuthorizationHelper.hasAdminRole())) {
+        if (content == null || (!content.isPublic() && !AuthorizationProvider.hasAdminRole())) {
             content = new Content();
         } else {
             content.setViewCount(content.getViewCount() + 1);

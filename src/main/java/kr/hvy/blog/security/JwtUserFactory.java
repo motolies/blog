@@ -1,7 +1,7 @@
 package kr.hvy.blog.security;
 
-import kr.hvy.blog.model.Authority;
-import kr.hvy.blog.model.User;
+import kr.hvy.blog.entity.Authority;
+import kr.hvy.blog.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -16,6 +16,7 @@ public final class JwtUserFactory {
 
     public static JwtUser create(User user) {
         return new JwtUser(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 mapToGrantedAuthorities(user.getAuthority()),

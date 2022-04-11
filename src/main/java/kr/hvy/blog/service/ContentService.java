@@ -1,6 +1,6 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Content;
+import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.util.MultipleResultSet;
 import org.springframework.security.core.Authentication;
 

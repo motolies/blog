@@ -1,6 +1,6 @@
 package kr.hvy.blog.repository;
 
-import kr.hvy.blog.model.File;
+import kr.hvy.blog.entity.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

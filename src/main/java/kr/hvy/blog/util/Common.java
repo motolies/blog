@@ -20,7 +20,7 @@ import java.util.*;
 public class Common {
 
     public static int getTimeZoneOffset(HttpServletRequest request) {
-        String stoff = CookieHelper.findByName(request, "TimeZoneOffset");
+        String stoff = CookieProvider.findByName(request, "TimeZoneOffset");
         return Integer.parseInt(stoff);
     }
 
@@ -294,7 +294,7 @@ public class Common {
     }
 
     public static byte[] getAdminId(HttpServletRequest req) {
-        String id = CookieHelper.findByName(req, "i");
+        String id = CookieProvider.findByName(req, "i");
         if (StringUtils.isBlank(id))
             return new byte[16];
         else

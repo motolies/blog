@@ -1,6 +1,6 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Category;
+import kr.hvy.blog.entity.Category;
 import kr.hvy.blog.util.MultipleResultSet;
 
 import java.sql.SQLException;

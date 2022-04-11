@@ -1,7 +1,7 @@
 package kr.hvy.blog.service;
 
-import kr.hvy.blog.model.Content;
-import kr.hvy.blog.model.File;
+import kr.hvy.blog.entity.Content;
+import kr.hvy.blog.entity.File;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.FileRepository;
 import kr.hvy.blog.util.FileHelper;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
