@@ -48,8 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers("/api/**").permitAll()
+                .antMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
 
                 .and()
@@ -62,4 +62,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.headers().frameOptions().sameOrigin().cacheControl();
     }
+
+
 }
