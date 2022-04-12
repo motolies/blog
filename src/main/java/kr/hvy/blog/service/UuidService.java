@@ -1,5 +1,18 @@
 package kr.hvy.blog.service;
 
-public interface UuidService {
-    String uuid();
+import kr.hvy.blog.mapper.UuidMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class UuidService {
+
+    private final UuidMapper uuidMapper;
+
+    public String uuid() {
+        return uuidMapper.uuid();
+    }
+
+
 }

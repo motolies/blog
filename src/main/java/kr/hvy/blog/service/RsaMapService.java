@@ -1,14 +1,33 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.RsaMap;
+import kr.hvy.blog.repository.RsaMapRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-public interface RsaMapService {
+import javax.transaction.Transactional;
 
-    RsaMap findById(byte[] publicKey);
+@Transactional
+@RequiredArgsConstructor
+@Service
+public class RsaMapService {
 
-    void save(RsaMap map);
+    private final RsaMapRepository rsaMapRepository;
 
-    void deleteByUpdateDate();
+    public RsaMap findById(byte[] publicKey) {
+        return rsaMapRepository.findById(publicKey).orElse(null);
+    }
 
-    void delete(RsaMap map);
+    public void save(RsaMap map) {
+        rsaMapRepository.saveAndFlush(map);
+    }
+
+    public void deleteByUpdateDate() {
+        rsaMapRepository.deleteByCreateDate();
+    }
+
+    public void delete(RsaMap map) {
+        rsaMapRepository.delete(map);
+    }
+
 }

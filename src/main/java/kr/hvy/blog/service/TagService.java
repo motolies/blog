@@ -1,18 +1,38 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Tag;
+import kr.hvy.blog.repository.TagRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface TagService {
+@RequiredArgsConstructor
+@Service
+public class TagService {
 
-    Tag save(Tag tag);
+    private final TagRepository tagRepository;
 
-    List<Tag> findAll();
+    @Transactional
+    public Tag save(Tag tag) {
+        return tagRepository.save(tag);
+    }
 
-    void deleteById(int id);
+    public List<Tag> findAll() {
+        return tagRepository.findAll();
+    }
 
-    List<Tag> findByNameContaining(String name);
+    @Transactional
+    public void deleteById(int id) {
+        tagRepository.deleteById(id);
+    }
 
-    Tag findById(int id);
+    public List<Tag> findByNameContaining(String name) {
+        return tagRepository.findByNameContaining(name);
+    }
+
+    public Tag findById(int id) {
+        return tagRepository.findById(id).orElse(null);
+    }
 }

@@ -48,8 +48,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/**").permitAll()
-                .antMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers("/**").permitAll()
+                // 그냥 메소드 별로 role 체크하는 걸로 변경
+                // .antMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
 
                 .and()
