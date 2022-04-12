@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hvy.blog.model.request.LoginRequestDto;
+import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.service.UserService;
 import kr.hvy.blog.util.CookieProvider;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class AuthController {
     @Operation(summary = "로그인")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping(value = {"login"})
-    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) {
+    public ResponseEntity login(@RequestBody LoginDto loginDto) {
 
         String token = userService.login(loginDto);
         ResponseCookie springCookie = CookieProvider.setSpringCookie(tokenHeader, token);

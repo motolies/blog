@@ -1,7 +1,7 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.User;
-import kr.hvy.blog.model.request.LoginRequestDto;
+import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public String login(LoginRequestDto loginDto) {
+    public String login(LoginDto loginDto) {
         User user = userRepository.findByUsername(loginDto.getUsername());
         if (user == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");

@@ -1,5 +1,9 @@
 package kr.hvy.blog.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Category;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "루트 카테고리 조회")
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @GetMapping("/root")
     public ResponseEntity getRootCategory() {
         // TODO: 루트를 가져온다 / 혹은 루트부터 쭈욱 다 뿌리는 식으로 변경할 수도 있다.
@@ -25,6 +31,8 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "카테고리 저장")
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @PostMapping("")
     public ResponseEntity<?> saveCategory(@RequestBody Category category) {
         throw new NotImplementedException("Not Implemented");
@@ -34,6 +42,8 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "카테고리 삭제")
+    @ApiResponse(responseCode = "200")
     @DeleteMapping("")
     public ResponseEntity<?> deleteCategory(@PathVariable int id) {
         throw new NotImplementedException("Not Implemented");

@@ -40,6 +40,7 @@ public class PostController {
                 .body(contentService.findByMain());
     }
 
+
     @Operation(summary = "검색")
     @ApiResponse(responseCode = "200",
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
@@ -71,6 +72,8 @@ public class PostController {
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트 저장")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping("")
     public ResponseEntity savePost(@Valid @ModelAttribute Content content, BindingResult bindingResult) {
         throw new NotImplementedException("Not Implemented");
@@ -107,6 +110,8 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "메인 포스트로 지정")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping("/main")
     public ResponseEntity setMain() {
         // TODO: 메인으로 변경시에는 ID만 받는다
@@ -116,6 +121,8 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트 공개/비공개 설정")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping("/public")
     public ResponseEntity changePublic() {
         // TODO: 공개로 변경시에는 ID와 공개여부를 받는다
@@ -126,6 +133,8 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트 삭제")
+    @ApiResponse(responseCode = "200")
     @DeleteMapping("/{contentId}")
     public ResponseEntity deletePost(@PathVariable int contentId) {
         throw new NotImplementedException("Not Implemented");
@@ -133,6 +142,8 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트에 태그 추가")
+    @ApiResponse(responseCode = "200")
     @PostMapping("/{contentId}/tag")
     public ResponseEntity addPostTag() {
         // TODO: ContentId와 TagId를 받는다.
@@ -141,6 +152,8 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트에 태그 삭제")
+    @ApiResponse(responseCode = "200")
     @DeleteMapping("/{contentId}/tag/{tagId}")
     public ResponseEntity deletePostTag() {
         // TODO: ContentId와 TagId를 받는다.

@@ -1,6 +1,8 @@
 package kr.hvy.blog.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.File;
@@ -62,6 +64,8 @@ public class FileController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "파일 업로드 저장")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.File.class))})
     @PostMapping("")
     public ResponseEntity upload() {
         // TODO: dto 만들어서 업로드 시키자
@@ -76,18 +80,22 @@ public class FileController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "포스트로 파일 목록 조회")
+    @ApiResponse(responseCode = "200")
     @PostMapping("/list/{contentId}")
-    public ResponseEntity upload(@PathVariable int contentId) {
-        // TODO: dto 만들어서 업로드 시키자
+    public ResponseEntity findFilesByContentId(@PathVariable int contentId) {
+        // TODO: ContentId로 파일 목록 조회
         throw new NotImplementedException("Not Implemented");
 //        List<File> file = fileService.findByContentId(contentId);
 //        file.sort((File f1, File f2) -> f1.getOriginFileName().compareTo(f2.getOriginFileName()));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "파일 삭제")
+    @ApiResponse(responseCode = "200")
     @DeleteMapping("/{fileId}")
     public ResponseEntity delete(@PathVariable String fileId) {
-        // TODO: dto 만들어서 업로드 시키자
+        // TODO: 아이디로 삭제하려면 hex 형식으로 변경해야 한다.
         throw new NotImplementedException("Not Implemented");
 //        String id = formData.getFirst("id") == null ? "" : formData.getFirst("id");
 //        byte[] bId = Common.Base64StringIdToBinary(id);
