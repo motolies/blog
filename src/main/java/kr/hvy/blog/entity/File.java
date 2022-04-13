@@ -1,7 +1,9 @@
 package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import kr.hvy.blog.util.ByteHelper;
 import kr.hvy.blog.util.Common;
@@ -23,6 +25,16 @@ public class File {
     @GenericGenerator(name = "customUuid", strategy = "kr.hvy.blog.entity.provider.CustomUUIDProvider")
     @GeneratedValue(generator = "customUuid")
     private byte[] id;
+
+    @JsonGetter("id")
+    public String getHexId() {
+        return ByteHelper.byteArrayToHex(this.id);
+    }
+
+    @JsonSetter("id")
+    public void setHexId(String id) {
+        this.id = ByteHelper.hexToByteArray(id);
+    }
 
     @JsonBackReference
     @ManyToOne(targetEntity = Content.class, fetch = FetchType.LAZY)

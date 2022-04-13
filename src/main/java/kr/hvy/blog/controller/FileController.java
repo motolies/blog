@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.File;
 import kr.hvy.blog.model.request.FileDto;
+import kr.hvy.blog.model.response.DeleteIdDto;
 import kr.hvy.blog.service.FileService;
 import kr.hvy.blog.util.AuthorizationProvider;
 import kr.hvy.blog.util.ByteHelper;
 import kr.hvy.blog.util.MediaUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,12 +84,11 @@ public class FileController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "포스트로 파일 목록 조회")
     @ApiResponse(responseCode = "200")
-    @PostMapping("/list/{contentId}")
+    @GetMapping("/list/{contentId}")
     public ResponseEntity findFilesByContentId(@PathVariable int contentId) {
-        // TODO: ContentId로 파일 목록 조회
-        throw new NotImplementedException("Not Implemented");
-//        List<File> file = fileService.findByContentId(contentId);
-//        file.sort((File f1, File f2) -> f1.getOriginFileName().compareTo(f2.getOriginFileName()));
+        List<File> file = fileService.findByContentId(contentId);
+        file.sort((File f1, File f2) -> f1.getOriginFileName().compareTo(f2.getOriginFileName()));
+        return new ResponseEntity<>(file, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -95,11 +96,9 @@ public class FileController {
     @ApiResponse(responseCode = "200")
     @DeleteMapping("/{fileId}")
     public ResponseEntity delete(@PathVariable String fileId) {
-        // TODO: 아이디로 삭제하려면 hex 형식으로 변경해야 한다.
-        throw new NotImplementedException("Not Implemented");
-//        String id = formData.getFirst("id") == null ? "" : formData.getFirst("id");
-//        byte[] bId = ByteHelper.hexToByteArray(id);
-//        fileService.deleteById(bId);
+        byte[] bId = ByteHelper.hexToByteArray(fileId);
+        fileService.deleteById(bId);
+        return new ResponseEntity<>(DeleteIdDto.builder().id(fileId).build(), HttpStatus.OK);
     }
 
 
