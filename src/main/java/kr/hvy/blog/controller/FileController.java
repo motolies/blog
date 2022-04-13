@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.File;
 import kr.hvy.blog.model.request.FileDto;
-import kr.hvy.blog.model.response.DeleteIdDto;
+import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.FileService;
 import kr.hvy.blog.util.AuthorizationProvider;
 import kr.hvy.blog.util.ByteHelper;
@@ -98,7 +98,7 @@ public class FileController {
     public ResponseEntity delete(@PathVariable String fileId) {
         byte[] bId = ByteHelper.hexToByteArray(fileId);
         fileService.deleteById(bId);
-        return new ResponseEntity<>(DeleteIdDto.builder().id(fileId).build(), HttpStatus.OK);
+        return new ResponseEntity<>(DeleteResponseDto.builder().id(fileId).build(), HttpStatus.OK);
     }
 
 

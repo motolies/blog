@@ -4,8 +4,14 @@
 
 <mapper namespace="kr.hvy.blog.mapper.ContentMapper">
 
-    <select id="findIdsByConditions" resultType="int">
-        SELECT SQL_CALC_FOUND_ROWS C.ID
+    <select id="findIdsByConditions" resultType="ContentNoBody">
+        SELECT SQL_CALC_FOUND_ROWS
+        C.ID
+        , C.SUBJECT AS SUBJECT
+        , CAT.NAME AS CATEGORY_NAME
+        , C.VIEWCOUNT AS VIEW_COUNT
+        , C.CREATEDATE AS CREATE_DATE
+        , C.UPDATEDATE AS UPDATE_DATE
         FROM CONTENT AS C
         JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
         WHERE 1 = 1
@@ -44,7 +50,7 @@
                 </choose>
             </foreach>
         </if>
-
+        ORDER BY C.CREATEDATE DESC
     </select>
 
 </mapper>

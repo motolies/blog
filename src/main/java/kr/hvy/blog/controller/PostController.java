@@ -1,11 +1,15 @@
 package kr.hvy.blog.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.model.base.Page;
+import kr.hvy.blog.model.response.ContentNoBody;
 import kr.hvy.blog.service.ContentService;
 import kr.hvy.blog.util.AuthorizationProvider;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,13 @@ public class PostController {
 
 
     @Operation(summary = "검색")
+    @Parameters({
+            @Parameter(name = "searchType", description = "TITLE / CONTENT / FULL(모두)", in = ParameterIn.QUERY),
+            @Parameter(name = "searchText", description = "검색어( `|`, `&`) 사용가능 ", in = ParameterIn.QUERY),
+            @Parameter(name = "categoryId", description = "카테고리 아이디", in = ParameterIn.QUERY),
+            @Parameter(name = "page", description = "페이지", example = "1", in = ParameterIn.QUERY),
+            @Parameter(name = "pageSize", description = "리스트 목록수", example = "10", in = ParameterIn.QUERY)
+    })
     @ApiResponse(responseCode = "200",
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
@@ -50,15 +61,11 @@ public class PostController {
             Authentication auth,
             @RequestParam(defaultValue = "TITLE") String searchType,
             @RequestParam(defaultValue = "") String searchText,
-            @RequestParam(defaultValue = "") String categoryId, @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "100") int pageSize, @RequestParam(defaultValue = "CreateDate DESC") String orderStr) {
-
-        Page<Integer> ids = contentService.findIdsByConditions(AuthorizationProvider.hasAdminRole(), searchType, searchText, categoryId, page, pageSize, orderStr);
-
-        // 이게 실제 데이터를 주는 부분이다.. 요거를 contentService.findIdsByConditions 에서 리턴하도록 바꿔야 한다.
-        return ResponseEntity.status(HttpStatus.OK).body(
-                contentService.findContentsByIdInOrderByCreateDateDesc(ids.getList())
-        );
+            @RequestParam(defaultValue = "") String categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "100") int pageSize) {
+        Page<ContentNoBody> contentPage = contentService.findIdsByConditions(AuthorizationProvider.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
+        return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 
     @Operation(summary = "단일 포스트 조회")

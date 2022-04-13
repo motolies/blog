@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DeleteIdDto {
+public class DeleteResponseDto {
     private String id;
 }
