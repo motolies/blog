@@ -6,15 +6,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.File;
+import kr.hvy.blog.model.request.FileDto;
 import kr.hvy.blog.service.FileService;
 import kr.hvy.blog.util.AuthorizationProvider;
-import kr.hvy.blog.util.Common;
+import kr.hvy.blog.util.ByteHelper;
 import kr.hvy.blog.util.MediaUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,10 +32,10 @@ public class FileController {
     private final FileService fileService;
 
     @Operation(summary = "파일 아이디로 조회 후 파일을 다운로드 한다.")
-    @GetMapping(value = {""})
-    public ResponseEntity serveFile(@RequestParam("id") String fileId) {
+    @GetMapping(value = {"/{fileId}"})
+    public ResponseEntity serveFile(@PathVariable String fileId) {
         try {
-            byte[] fId = Common.Base64StringIdToBinary(fileId);
+            byte[] fId = ByteHelper.hexToByteArray(fileId);
             File file = fileService.load(fId);
 
             Content content = file.getContent();
@@ -66,17 +68,15 @@ public class FileController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "파일 업로드 저장")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.File.class))})
-    @PostMapping("")
-    public ResponseEntity upload() {
-        // TODO: dto 만들어서 업로드 시키자
-        throw new NotImplementedException("Not Implemented");
-//        try {
-//            File uploadedFile = fileService.store(file, contentId);
-//            return new ResponseEntity<File>(uploadedFile, HttpStatus.OK);
-//        } catch (Exception e) {
-//            log.error("file upload errpr", e);
-//            return ResponseEntity.badRequest().build();
-//        }
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity upload(@ModelAttribute FileDto fileDto) {
+        try {
+            File uploadedFile = fileService.store(fileDto.getFile(), fileDto.getContentId());
+            return new ResponseEntity<>(uploadedFile, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("file upload errpr", e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -98,7 +98,7 @@ public class FileController {
         // TODO: 아이디로 삭제하려면 hex 형식으로 변경해야 한다.
         throw new NotImplementedException("Not Implemented");
 //        String id = formData.getFirst("id") == null ? "" : formData.getFirst("id");
-//        byte[] bId = Common.Base64StringIdToBinary(id);
+//        byte[] bId = ByteHelper.hexToByteArray(id);
 //        fileService.deleteById(bId);
     }
 

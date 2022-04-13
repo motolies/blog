@@ -128,10 +128,10 @@ public class Content implements Serializable {
         tag.getContent().add(this);
     }
 
-    @Formula(value = "(SELECT MIN(n.id) FROM Content as n WHERE n.id > id)")
+    @Formula(value = "(SELECT IFNULL(MIN(n.id),0) FROM Content as n WHERE n.id > id)")
     private int next;
 
-    @Formula(value = "(SELECT MAX(p.id) FROM Content as p WHERE p.id < id)")
+    @Formula(value = "(SELECT IFNULL(MAX(p.id),0) FROM Content as p WHERE p.id < id)")
     private int prev;
 
 }

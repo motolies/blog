@@ -2,7 +2,7 @@ package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
-import kr.hvy.blog.util.Common;
+import kr.hvy.blog.util.ByteHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
@@ -30,7 +30,7 @@ public class User implements Serializable {
     private byte[] id;
 
     public String getHexId() {
-        return Common.BinaryToEncodeBase64(this.id);
+        return ByteHelper.byteArrayToHex(this.id);
     }
 
     @Column(name = "Name", nullable = false, length = 128)

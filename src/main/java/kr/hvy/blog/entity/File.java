@@ -3,6 +3,7 @@ package kr.hvy.blog.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
+import kr.hvy.blog.util.ByteHelper;
 import kr.hvy.blog.util.Common;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +46,7 @@ public class File {
     @Column(name = "IsDelete", nullable = false, length = 1)
     private boolean isDelete;
 
-    @Column(name = "CreateDate", nullable = false)
+    @Column(name = "CreateDate")
     private java.sql.Timestamp createDate;
 
     @Transient
@@ -63,7 +64,7 @@ public class File {
 
     private void makeResourceUri() {
         this.createDate = Common.getUtcTimestamp();
-        this.resourceUri = "/file?id=" + Common.BinaryToEncodeURIBase64(this.id);
+        this.resourceUri = "/file?id=" + ByteHelper.byteArrayToHex(this.id);
     }
 
 }

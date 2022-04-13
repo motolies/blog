@@ -6,12 +6,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Category;
+import kr.hvy.blog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.SQLException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,34 +23,43 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/category")
 public class CategoryController {
 
+    private final CategoryService categoryService;
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "루트 카테고리 조회")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @GetMapping("/root")
     public ResponseEntity getRootCategory() {
-        // TODO: 루트를 가져온다 / 혹은 루트부터 쭈욱 다 뿌리는 식으로 변경할 수도 있다.
-        throw new NotImplementedException("Not Implemented");
-//        Category category = categoryService.findRoot();
+
+        Category category = categoryService.findRoot();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(category);
+
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "카테고리 저장")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @PostMapping("")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category) {
-        throw new NotImplementedException("Not Implemented");
-//        category.cleanUp();
-//        categoryService.saveWithProc(cate);
-//        categoryService.updateFullName();
+    public ResponseEntity<?> saveCategory(@RequestBody Category category) throws SQLException {
+        category.cleanUp();
+        categoryService.saveWithProc(category);
+        categoryService.updateFullName();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(category);
+
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "카테고리 삭제")
     @ApiResponse(responseCode = "200")
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteCategory(@PathVariable int id) {
-        throw new NotImplementedException("Not Implemented");
-//        categoryService.deleteWithProc(id);
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable String categoryId) throws SQLException {
+        categoryService.deleteWithProc(categoryId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }
