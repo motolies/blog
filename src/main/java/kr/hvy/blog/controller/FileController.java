@@ -98,7 +98,7 @@ public class FileController {
     public ResponseEntity delete(@PathVariable String fileId) {
         byte[] bId = ByteHelper.hexToByteArray(fileId);
         fileService.deleteById(bId);
-        return new ResponseEntity<>(DeleteResponseDto.builder().id(fileId).build(), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(DeleteResponseDto.builder().id(fileId).build());
     }
 
 

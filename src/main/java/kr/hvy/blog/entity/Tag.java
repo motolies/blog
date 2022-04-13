@@ -2,8 +2,7 @@ package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
@@ -13,6 +12,9 @@ import java.io.Serializable;
 @Getter
 @Setter
 @EntityListeners({SpecialCharacterListener.class})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "`tag`")
 public class Tag implements Serializable {
 

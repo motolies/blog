@@ -6,15 +6,18 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Content;
+import kr.hvy.blog.entity.Tag;
 import kr.hvy.blog.model.base.Page;
+import kr.hvy.blog.model.request.ContentPublicDto;
+import kr.hvy.blog.model.request.ContentTagDto;
 import kr.hvy.blog.model.response.ContentNoBody;
+import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.ContentService;
+import kr.hvy.blog.service.TagService;
 import kr.hvy.blog.util.AuthorizationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,11 +30,13 @@ import javax.validation.Valid;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "Post")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Post")
 @RequestMapping("/api/post")
 public class PostController {
 
     private final ContentService contentService;
+
+    private final TagService tagService;
 
     @Operation(summary = "메인화면으로 표기할 포스트를 조회한다")
     @ApiResponse(responseCode = "200", content = {
@@ -42,6 +47,15 @@ public class PostController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(contentService.findByMain());
+    }
+
+    @Operation(summary = "단일 포스트 조회")
+    @ApiResponse(responseCode = "200",
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
+    )
+    @GetMapping(value = {"/{contentId}"})
+    public ResponseEntity getContent(@PathVariable int contentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(contentService.findByIdAndAuthorization(contentId));
     }
 
 
@@ -68,75 +82,52 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 
-    @Operation(summary = "단일 포스트 조회")
-    @ApiResponse(responseCode = "200",
-            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
-    )
-    @GetMapping(value = {"/{contentId}"})
-    public ResponseEntity getContent(@PathVariable int contentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(contentService.findById(contentId));
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "글쓰기 시작전 새로운 content를 내려준다.")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
+    @PostMapping("")
+    public ResponseEntity newPost() {
+        return ResponseEntity.status(HttpStatus.OK).body(contentService.newContent());
     }
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "포스트 저장")
+    @Operation(summary = "포스트 저장(PUT으로 변경해야 할 것 같다.)")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
-    @PostMapping("")
-    public ResponseEntity savePost(@Valid @ModelAttribute Content content, BindingResult bindingResult) {
-        throw new NotImplementedException("Not Implemented");
+    @PutMapping("/{contentId}")
+    public ResponseEntity savePost(@PathVariable int contentId, @Valid @RequestBody Content newContent, BindingResult bindingResult) {
 
-//        if (bindingResult.hasErrors()) {
-//        			FieldError fieldError = bindingResult.getFieldError();
-//
-//        			MultipleResultSet category = categoryService.findCategoryWithProc();
-//        			modelAndView.addObject("content", content);
-//        			modelAndView.addObject("category", category.getTables().get("table0"));
-//        			modelAndView.addObject("msg", fieldError.getDefaultMessage());
-//        			modelAndView.addObject("stat", false);
-//
-//        			modelAndView.setViewName("admin/post/modify");
-//        			return modelAndView;
-//        		} else {
-//        			try {
-//        				contentService.save(content);
-//        			} catch (Exception e) {
-//        				MultipleResultSet category = categoryService.findCategoryWithProc();
-//        				modelAndView.addObject("content", content);
-//        				modelAndView.addObject("category", category.getTables().get("table0"));
-//        				modelAndView.addObject("msg", "실패하였습니다.");
-//        				modelAndView.addObject("stat", false);
-//        				modelAndView.setViewName("admin/post/modify");
-//        				return modelAndView;
-//        			}
-//
-//        			// 저장이 완료되면 리스트로
-//        			modelAndView.setViewName("redirect:/post/" + content.getId());
-//        			return modelAndView;
-//        		}
+        Content content = contentService.findById(contentId);
+        if (content != null) {
+            if (bindingResult.hasErrors()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldError().getDefaultMessage());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(contentService.update(content, newContent));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 포스트입니다.");
+        }
 
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "메인 포스트로 지정")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
-    @PostMapping("/main")
-    public ResponseEntity setMain() {
-        // TODO: 메인으로 변경시에는 ID만 받는다
-        throw new NotImplementedException("Not Implemented");
-
-//        contentService.setMain(Integer.parseInt(id));
+    @PostMapping("/main/{contentId}")
+    public ResponseEntity setMain(@PathVariable int contentId) {
+        contentService.setMain(contentId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "포스트 공개/비공개 설정")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping("/public")
-    public ResponseEntity changePublic() {
-        // TODO: 공개로 변경시에는 ID와 공개여부를 받는다
-        throw new NotImplementedException("Not Implemented");
-//        Content con = contentService.findById(Integer.parseInt(id));
-//        			con.setPublic(Boolean.parseBoolean(isPublic));
-//        			contentService.save(con);
+    public ResponseEntity changePublic(@RequestBody ContentPublicDto contentPublicDto) {
+        Content content = contentService.findById(contentPublicDto.getId());
+        content.setPublic(contentPublicDto.isPublic());
+        contentService.save(content);
+        return ResponseEntity.status(HttpStatus.OK).body(content);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -144,28 +135,32 @@ public class PostController {
     @ApiResponse(responseCode = "200")
     @DeleteMapping("/{contentId}")
     public ResponseEntity deletePost(@PathVariable int contentId) {
-        throw new NotImplementedException("Not Implemented");
-//        contentService.deleteById(Integer.parseInt(id));
+        contentService.deleteById(contentId);
+        return ResponseEntity.status(HttpStatus.OK).body(DeleteResponseDto.builder().id(String.valueOf(contentId)).build());
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "포스트에 태그 추가")
     @ApiResponse(responseCode = "200")
     @PostMapping("/{contentId}/tag")
-    public ResponseEntity addPostTag() {
-        // TODO: ContentId와 TagId를 받는다.
-        throw new NotImplementedException("Not Implemented");
-//        contentService.deleteById(Integer.parseInt(id));
+    public ResponseEntity addPostTag(@PathVariable int contentId, @RequestBody ContentTagDto contentTagDto) {
+        Tag tag = tagService.save(Tag.builder().name(contentTagDto.getTagName()).build());
+        Content content = contentService.findById(contentId);
+        content.addTag(tag);
+        contentService.save(content);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "포스트에 태그 삭제")
     @ApiResponse(responseCode = "200")
     @DeleteMapping("/{contentId}/tag/{tagId}")
-    public ResponseEntity deletePostTag() {
-        // TODO: ContentId와 TagId를 받는다.
-        throw new NotImplementedException("Not Implemented");
-//        contentService.deleteById(Integer.parseInt(id));
+    public ResponseEntity deletePostTag(@PathVariable int contentId, @PathVariable int tagId) {
+        Content content = contentService.findById(contentId);
+        Tag tag = tagService.findById(tagId);
+        content.removeTag(tag);
+        contentService.save(content);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 

@@ -27,7 +27,7 @@ public class ExceptionControllerAdvice {
         map.put("message", "ERROR");
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(map);
     }
 

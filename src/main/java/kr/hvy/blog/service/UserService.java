@@ -25,6 +25,10 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    public User findById(byte[] id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+    }
+
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

@@ -1,11 +1,16 @@
 package kr.hvy.blog.service;
 
+import kr.hvy.blog.entity.Category;
 import kr.hvy.blog.entity.Content;
+import kr.hvy.blog.entity.Tag;
+import kr.hvy.blog.entity.User;
 import kr.hvy.blog.mapper.ContentMapper;
 import kr.hvy.blog.mapper.CountMapper;
 import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.model.response.ContentNoBody;
 import kr.hvy.blog.repository.ContentRepository;
+import kr.hvy.blog.repository.TagRepository;
+import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.util.AuthorizationProvider;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +25,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,13 +37,33 @@ public class ContentService {
     @PersistenceContext
     private EntityManager em;
 
+    private final UserRepository userRepository;
+
     private final ContentRepository contentRepository;
+
+    private final CategoryService categoryService;
 
     private final CountMapper countMapper;
 
     private final ContentMapper contentMapper;
 
-    public Content findById(int id) {
+    private final TagRepository tagRepository;
+
+
+    public Content newContent() {
+        User user = userRepository.findById(AuthorizationProvider.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        this.deleteTempContent();
+        Category cat = categoryService.findById("ROOT");
+        Content content = new Content();
+        content.setUser(user);
+        content.setCategory(cat);
+        contentRepository.saveAndFlush(content);
+        int contentId = content.getId();
+        em.detach(content);
+        return contentRepository.findById(contentId).orElseThrow(() -> new IllegalArgumentException("컨텐츠가 존재하지 않습니다."));
+    }
+
+    public Content findByIdAndAuthorization(int id) {
         Content content = contentRepository.findById(id).orElse(null);
 
         if (content == null || (!content.isPublic() && !AuthorizationProvider.hasAdminRole())) {
@@ -48,14 +75,46 @@ public class ContentService {
         return content;
     }
 
+    public Content findById(int id) {
+        return contentRepository.findById(id).orElse(null);
+    }
+
     public Content findBySyncKey(String synckey) {
         return contentRepository.findBySyncKey(synckey);
     }
 
     @Transactional
-    public void save(Content content) {
-        contentRepository.save(content);
+    public Content save(Content content) {
+        return contentRepository.save(content);
     }
+
+    @Transactional
+    public Content update(Content content, Content newContent) {
+        content.setSubject(newContent.getSubject());
+        content.setBody(newContent.getBody());
+        content.setCategoryId(newContent.getCategoryId());
+
+        // 기존꺼 삭제
+        Set<Tag> oldTags = tagRepository.findByIdIn(content.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
+        for (Tag tag : oldTags) {
+            content.removeTag(tag);
+        }
+
+        // 신규 추가
+        Set<Tag> newTags = new HashSet<>();
+        if (newContent.getTag().size() > 0) {
+            newTags = tagRepository.findByIdIn(newContent.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
+        }
+        for (Tag tag : newTags) {
+            content.addTag(tag);
+        }
+
+        contentRepository.saveAndFlush(content);
+        int contentId = content.getId();
+        em.detach(content);
+        return contentRepository.findById(contentId).orElse(null);
+    }
+
 
     public Content findByMain() {
         Content content = contentRepository.findByIsMainTrue();

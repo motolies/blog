@@ -103,7 +103,7 @@ public class Content implements Serializable {
     private java.util.Set<Tag> tag = new java.util.HashSet<Tag>();
 
     @SuppressWarnings({"unchecked", "JpaQlInspection"})
-    @JsonIgnore
+//    @JsonIgnore
     @OrderBy("OriginFileName ASC")
     @OneToMany(mappedBy = "content", targetEntity = File.class)
     @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.LOCK})

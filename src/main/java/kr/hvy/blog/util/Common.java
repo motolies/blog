@@ -67,7 +67,6 @@ public class Common {
             bos.close();
             bytes = bos.toByteArray();
         } catch (IOException ex) {
-            // TODO: Handle the exception } return bytes;
         }
         return bytes;
     }
