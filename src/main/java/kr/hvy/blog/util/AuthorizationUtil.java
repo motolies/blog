@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 
-public class AuthorizationProvider {
+public class AuthorizationUtil {
 
     public static boolean hasAdminRole() {
         //https://jason-moon.tistory.com/132

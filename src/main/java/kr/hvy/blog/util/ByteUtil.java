@@ -2,7 +2,7 @@ package kr.hvy.blog.util;
 
 import java.util.Locale;
 
-public class ByteHelper {
+public class ByteUtil {
 
     public static String byteArrayToHex(byte[] a) {
         StringBuilder sb = new StringBuilder();

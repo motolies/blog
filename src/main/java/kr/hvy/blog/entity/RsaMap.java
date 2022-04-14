@@ -1,7 +1,7 @@
 package kr.hvy.blog.entity;
 
 import kr.hvy.blog.annotation.SpecialCharacterListener;
-import kr.hvy.blog.util.Common;
+import kr.hvy.blog.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +32,7 @@ public class RsaMap implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        createDate = Common.getUtcTimestamp();
+        createDate = TimeUtil.getUtcTimestamp();
     }
 
 }

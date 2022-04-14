@@ -3,7 +3,7 @@ package kr.hvy.blog.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import kr.hvy.blog.entity.User;
-import kr.hvy.blog.util.ByteHelper;
+import kr.hvy.blog.util.ByteUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -66,22 +66,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", user.getAuthority().stream().map(m -> m.getName()).toArray());
-
-        final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + refreshTokenValidSecond * 1000);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(user.getHexId())
-                .setIssuedAt(createdDate)
-                .setExpiration(expirationDate)
-                .signWith(getSecretKey(secretKey))
-                .compact();
-    }
-
 
     private SecretKey getSecretKey(String secret) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
@@ -92,17 +76,11 @@ public class JwtTokenProvider {
     // JWT 토큰에서 인증 정보 조회(DB 조회하지 않고 강제주입)
     public Authentication getAuthenticationWithoutDB(String token) {
         String userId = getUserHexId(token);
-        byte[] uid = ByteHelper.hexToByteArray(userId);
+        byte[] uid = ByteUtil.hexToByteArray(userId);
         Set<GrantedAuthority> roles = getAuthoritiesFromToken(token);
 
         JwtUser user = new JwtUser(uid, "", "", roles, true);
         return new UsernamePasswordAuthenticationToken((UserDetails) user, "", user.getAuthorities());
-    }
-
-    // 하나만 단독으로 받아오기
-    public <T> T getClaimsById(String token, String id) {
-        Function<Claims, T> func = t -> (T) t.get(id);
-        return getClaimFromToken(token, func);
     }
 
     public Set<GrantedAuthority> getAuthoritiesFromToken(String token) {

@@ -15,7 +15,7 @@ import kr.hvy.blog.model.response.ContentNoBody;
 import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.ContentService;
 import kr.hvy.blog.service.TagService;
-import kr.hvy.blog.util.AuthorizationProvider;
+import kr.hvy.blog.util.AuthorizationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -78,7 +78,7 @@ public class PostController {
             @RequestParam(defaultValue = "") String categoryId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int pageSize) {
-        Page<ContentNoBody> contentPage = contentService.findIdsByConditions(AuthorizationProvider.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
+        Page<ContentNoBody> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 

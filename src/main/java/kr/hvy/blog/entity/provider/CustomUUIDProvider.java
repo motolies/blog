@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
-import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.query.spi.NativeQueryImplementor;
 import org.hibernate.service.ServiceRegistry;
@@ -16,7 +15,7 @@ import java.util.Properties;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CustomUUIDProvider implements IdentifierGenerator, Configurable {
+public class CustomUUIDProvider implements IdentifierGenerator {
 
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {

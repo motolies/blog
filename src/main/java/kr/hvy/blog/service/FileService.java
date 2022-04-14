@@ -4,7 +4,7 @@ import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.File;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.FileRepository;
-import kr.hvy.blog.util.FileHelper;
+import kr.hvy.blog.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +49,7 @@ public class FileService {
             String path = file.getPath();
             fileRepository.delete(file);
 
-            FileHelper.deleteFile(rootLocation.toString(), path);
+            FileUtil.deleteFile(rootLocation.toString(), path);
         }
     }
 
@@ -84,7 +84,7 @@ public class FileService {
                 throw new Exception("Failed to store empty file " + file.getOriginalFilename());
             }
 
-            String saveFileName = FileHelper.fileSave(rootLocation.toString(), file, contentId);
+            String saveFileName = FileUtil.fileSave(rootLocation.toString(), file, contentId);
 
             if (saveFileName.toCharArray()[0] == '/') {
                 saveFileName = saveFileName.substring(1);

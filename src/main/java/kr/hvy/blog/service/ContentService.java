@@ -11,7 +11,7 @@ import kr.hvy.blog.model.response.ContentNoBody;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.TagRepository;
 import kr.hvy.blog.repository.UserRepository;
-import kr.hvy.blog.util.AuthorizationProvider;
+import kr.hvy.blog.util.AuthorizationUtil;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
@@ -51,7 +51,7 @@ public class ContentService {
 
 
     public Content newContent() {
-        User user = userRepository.findById(AuthorizationProvider.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+        User user = userRepository.findById(AuthorizationUtil.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
         this.deleteTempContent();
         Category cat = categoryService.findById("ROOT");
         Content content = new Content();
@@ -66,7 +66,7 @@ public class ContentService {
     public Content findByIdAndAuthorization(int id) {
         Content content = contentRepository.findById(id).orElse(null);
 
-        if (content == null || (!content.isPublic() && !AuthorizationProvider.hasAdminRole())) {
+        if (content == null || (!content.isPublic() && !AuthorizationUtil.hasAdminRole())) {
             content = new Content();
         } else {
             content.setViewCount(content.getViewCount() + 1);
@@ -119,7 +119,7 @@ public class ContentService {
     public Content findByMain() {
         Content content = contentRepository.findByIsMainTrue();
 
-        if (content == null || (!content.isPublic() && !AuthorizationProvider.hasAdminRole())) {
+        if (content == null || (!content.isPublic() && !AuthorizationUtil.hasAdminRole())) {
             content = new Content();
         } else {
             content.setViewCount(content.getViewCount() + 1);

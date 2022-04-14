@@ -1,7 +1,7 @@
 package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.hvy.blog.util.Common;
+import kr.hvy.blog.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
@@ -23,7 +23,7 @@ public class Content implements Serializable {
     private static final long serialVersionUID = 3019806640718052303L;
 
     public Content() {
-        this.createDate = this.updateDate = Common.getUtcTimestamp();
+        this.createDate = this.updateDate = TimeUtil.getUtcTimestamp();
     }
 
     @Column(name = "Id", nullable = false, length = 11)
@@ -85,13 +85,13 @@ public class Content implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        createDate = updateDate = Common.getUtcTimestamp();
+        createDate = updateDate = TimeUtil.getUtcTimestamp();
         updateNormalBody();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updateDate = Common.getUtcTimestamp();
+        updateDate = TimeUtil.getUtcTimestamp();
         updateNormalBody();
     }
 

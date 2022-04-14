@@ -1,20 +1,15 @@
 package kr.hvy.blog.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.imgscalr.Scalr;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.UUID;
 
 @Slf4j
-public class FileHelper {
+public class FileUtil {
 
     /**
      * @return 생성된 파일 명(유일한 값)
@@ -81,21 +76,6 @@ public class FileHelper {
         return String.valueOf(Math.round(result));
     }
 
-    private static String calcPath(String uploadPath) {
-
-        Calendar cal = Calendar.getInstance();
-
-        String yearPath = File.separator + cal.get(Calendar.YEAR);
-        String monthPath = yearPath + File.separator + new DecimalFormat("00").format(cal.get(Calendar.MONTH));
-        String datePath = monthPath + File.separator + new DecimalFormat("00").format(cal.get(Calendar.DATE));
-
-        makeDir(uploadPath, yearPath, monthPath, datePath);
-
-        log.info(datePath);
-
-        return datePath;
-    }
-
     private static void makeDir(String uploadPath, String... paths) {
 
         System.out.println(paths[paths.length - 1] + " : " + new File(paths[paths.length - 1]).exists());
@@ -117,21 +97,6 @@ public class FileHelper {
         return filePath.substring(uploadPath.length()).replace(File.separatorChar, '/');
     }
 
-    private static String makeThumbnail(String uploadPath, String path, String fileName) throws Exception {
-
-        BufferedImage sourceImg = ImageIO.read(new File(uploadPath + path, fileName));
-
-        BufferedImage destImg = Scalr.resize(sourceImg, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_TO_HEIGHT, 100);
-
-        String thumbnailName = uploadPath + path + File.separator + "s_" + fileName;
-
-        File newFile = new File(thumbnailName);
-        String formatName = fileName.substring(fileName.lastIndexOf(".") + 1);
-
-        ImageIO.write(destImg, formatName.toUpperCase(), newFile);
-
-        return thumbnailName.substring(uploadPath.length()).replace(File.separatorChar, '/');
-    }
 
     public static void deleteFile(String uploadPath, String fileName) {
         File file = new File(uploadPath + File.separatorChar + fileName);

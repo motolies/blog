@@ -49,11 +49,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.mariadb.jdbc</groupId>-->
-        <!--            <artifactId>mariadb-java-client</artifactId>-->
-        <!--            <scope>runtime</scope>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -98,13 +93,6 @@
             <version>0.11.2</version>
             <scope>runtime</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.imgscalr</groupId>
-            <artifactId>imgscalr-lib</artifactId>
-            <version>4.2</version>
-        </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

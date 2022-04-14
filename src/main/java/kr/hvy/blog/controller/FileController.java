@@ -9,8 +9,8 @@ import kr.hvy.blog.entity.File;
 import kr.hvy.blog.model.request.FileDto;
 import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.FileService;
-import kr.hvy.blog.util.AuthorizationProvider;
-import kr.hvy.blog.util.ByteHelper;
+import kr.hvy.blog.util.AuthorizationUtil;
+import kr.hvy.blog.util.ByteUtil;
 import kr.hvy.blog.util.MediaUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,12 +37,12 @@ public class FileController {
     @GetMapping(value = {"/{fileId}"})
     public ResponseEntity serveFile(@PathVariable String fileId) {
         try {
-            byte[] fId = ByteHelper.hexToByteArray(fileId);
+            byte[] fId = ByteUtil.hexToByteArray(fileId);
             File file = fileService.load(fId);
 
             Content content = file.getContent();
 
-            if (content == null || (!content.isPublic() && !AuthorizationProvider.hasAdminRole())) {
+            if (content == null || (!content.isPublic() && !AuthorizationUtil.hasAdminRole())) {
                 // 권한없음으로 받지 못함
                 return ResponseEntity.notFound().build();
             } else {
@@ -96,7 +96,7 @@ public class FileController {
     @ApiResponse(responseCode = "200")
     @DeleteMapping("/{fileId}")
     public ResponseEntity delete(@PathVariable String fileId) {
-        byte[] bId = ByteHelper.hexToByteArray(fileId);
+        byte[] bId = ByteUtil.hexToByteArray(fileId);
         fileService.deleteById(bId);
         return ResponseEntity.status(HttpStatus.OK).body(DeleteResponseDto.builder().id(fileId).build());
     }

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
-import kr.hvy.blog.util.ByteHelper;
-import kr.hvy.blog.util.Common;
+import kr.hvy.blog.util.ByteUtil;
+import kr.hvy.blog.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -28,12 +28,12 @@ public class File {
 
     @JsonGetter("id")
     public String getHexId() {
-        return ByteHelper.byteArrayToHex(this.id);
+        return ByteUtil.byteArrayToHex(this.id);
     }
 
     @JsonSetter("id")
     public void setHexId(String id) {
-        this.id = ByteHelper.hexToByteArray(id);
+        this.id = ByteUtil.hexToByteArray(id);
     }
 
     @JsonBackReference
@@ -75,8 +75,8 @@ public class File {
     }
 
     private void makeResourceUri() {
-        this.createDate = Common.getUtcTimestamp();
-        this.resourceUri = "/file?id=" + ByteHelper.byteArrayToHex(this.id);
+        this.createDate = TimeUtil.getUtcTimestamp();
+        this.resourceUri = "/file?id=" + ByteUtil.byteArrayToHex(this.id);
     }
 
 }
