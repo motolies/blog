@@ -4,7 +4,7 @@
 
 <mapper namespace="kr.hvy.blog.mapper.UuidMapper">
 
-    <select id="uuid" resultType="string">
+    <select id="uuid" resultType="string" useCache="false" flushCache="true">
         SELECT HEX(FN_ORDERED_UUID());
     </select>
 

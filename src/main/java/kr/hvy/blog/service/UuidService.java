@@ -14,4 +14,8 @@ public class UuidService {
         return uuidMapper.uuid();
     }
 
+    public String getUuid() {
+        return uuidMapper.getUuid();
+    }
+
 }
