@@ -1,5 +1,5 @@
 ### STAGE 1: Build ###
-FROM maven:3-openjdk-17 AS builder
+FROM docker.hvy.kr/maven:3-openjdk-17 AS builder
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 

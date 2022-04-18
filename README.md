@@ -22,7 +22,7 @@ docker push --all-tags docker.hvy.kr/blog-back
 
 ```shell
 # 삭제
-docker rm -f blog
+docker rm -f blogback
 
 
 # 실행(테스트용)
@@ -39,7 +39,7 @@ docker run -d --restart=unless-stopped \
 -p 8080:8080 \
 -e DB_URL=mariadb:3306 --link mariadb \
 -v /volume1/docker/blog/file:/skyscape/file \
---name blog docker.hvy.kr/blog
+--name blogback docker.hvy.kr/blog
 ```
 
 
