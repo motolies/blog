@@ -10,6 +10,7 @@
 ## 빌드
 
 ### 다중 아키텍처 빌드시
+현재 메이븐 오류로 m1에서만 양뱡향 빌드가 되드라
 ```shell
 # 기본 docker buildx 로는 바로 빌드가 되지 않는다.
 # 그래서 신규로 하나 생성하여 주자
@@ -18,7 +19,7 @@ docker buildx create --name jarvis \
 && docker buildx inspect --bootstrap
 
 # -t 옵션을 붙이면 tag를 추가해서 업로드 가능하다
-docker buildx build --platform linux/amd64,linux/arm64 --push -t docker.hvy.kr/blog-back  .
+docker buildx build --platform linux/amd64,linux/arm64 --no-cache --push -t docker.hvy.kr/blog-back  .
 ```
 
 ### 단일 빌드시
