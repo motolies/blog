@@ -26,7 +26,7 @@ RUN echo BuildEnd : $(date +%F_%T)
 
 
 ### STAGE 2: Production Environment ###
-FROM amazoncorretto:17-alpine-jdk
+FROM openjdk:17
 
 #RUN addgroup -g 1001 -S spring
 #RUN adduser -S boot -u 1001
