@@ -11,7 +11,7 @@ import kr.hvy.blog.entity.Tag;
 import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.model.request.ContentPublicDto;
 import kr.hvy.blog.model.request.ContentTagDto;
-import kr.hvy.blog.model.response.ContentNoBody;
+import kr.hvy.blog.model.response.ContentNoBodyDto;
 import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.ContentService;
 import kr.hvy.blog.service.TagService;
@@ -78,7 +78,7 @@ public class PostController {
             @RequestParam(defaultValue = "") String categoryId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int pageSize) {
-        Page<ContentNoBody> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
+        Page<ContentNoBodyDto> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 

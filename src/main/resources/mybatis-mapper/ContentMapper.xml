@@ -4,7 +4,7 @@
 
 <mapper namespace="kr.hvy.blog.mapper.ContentMapper">
 
-    <select id="findIdsByConditions" resultType="ContentNoBody">
+    <select id="findIdsByConditions" resultType="ContentNoBodyDto">
         SELECT SQL_CALC_FOUND_ROWS
         C.ID
         , C.SUBJECT AS SUBJECT

@@ -7,7 +7,7 @@ import kr.hvy.blog.entity.User;
 import kr.hvy.blog.mapper.ContentMapper;
 import kr.hvy.blog.mapper.CountMapper;
 import kr.hvy.blog.model.base.Page;
-import kr.hvy.blog.model.response.ContentNoBody;
+import kr.hvy.blog.model.response.ContentNoBodyDto;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.TagRepository;
 import kr.hvy.blog.repository.UserRepository;
@@ -334,7 +334,7 @@ public class ContentService {
         }
     }
 
-    public Page<ContentNoBody> findIdsByConditions(boolean isAdmin, String searchType, String searchText, String categoryId, int page, int pageSize) {
+    public Page<ContentNoBodyDto> findIdsByConditions(boolean isAdmin, String searchType, String searchText, String categoryId, int page, int pageSize) {
         // tag =
         //########### 아래가 준비된 것
         // admin =
@@ -348,10 +348,10 @@ public class ContentService {
         List<String> tmpConditions = isAnd ? Arrays.asList(searchText.split("&")) : Arrays.asList(searchText.split("\\|"));
         List<String> conditions = tmpConditions.stream().map(String::trim).collect(Collectors.toList());
 
-        List<ContentNoBody> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, page, pageSize);
+        List<ContentNoBodyDto> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, page, pageSize);
         int count = countMapper.getTotalCount();
 
-        Page<ContentNoBody> pager = new Page<>();
+        Page<ContentNoBodyDto> pager = new Page<>();
         pager.setList(list);
         pager.setPage(page);
         pager.setPageSize(pageSize);
