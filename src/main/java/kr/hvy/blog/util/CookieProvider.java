@@ -19,7 +19,7 @@ public class CookieProvider {
 
     public static ResponseCookie setSpringCookie(String name, String value) {
         return ResponseCookie.from(name, value)
-                .sameSite("None")
+//                .sameSite("None")
                 .path(COOKIE_PATH)
                 .secure(USE_HTTPS)
                 .httpOnly(READONLY)
@@ -29,7 +29,7 @@ public class CookieProvider {
 
     public static ResponseCookie removeSpringCookie(String name) {
         return ResponseCookie.from(name, null)
-                .sameSite("None")
+//                .sameSite("None")
                 .path(COOKIE_PATH)
                 .secure(USE_HTTPS)
                 .httpOnly(READONLY)
