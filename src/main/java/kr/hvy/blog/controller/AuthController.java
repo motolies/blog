@@ -11,6 +11,7 @@ import kr.hvy.blog.entity.User;
 import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.model.response.LoginResponseDto;
 import kr.hvy.blog.model.response.MyProfileDto;
+import kr.hvy.blog.security.JwtUser;
 import kr.hvy.blog.security.RSAEncryptHelper;
 import kr.hvy.blog.service.RsaMapService;
 import kr.hvy.blog.service.UserService;
@@ -58,7 +59,8 @@ public class AuthController {
     public ResponseEntity<?> getMeInfo(Authentication auth) {
 
         // 토큰에서 정보 빼서 넘겨준다
-        User user = userService.findByUsername(auth.getName());
+        byte[] userId = ((JwtUser)auth.getPrincipal()).getId();
+        User user = userService.findById(userId);
 
         List<AuthorityName> roles = user.getAuthority().stream().map(a -> {
             return a.getName();
