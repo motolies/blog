@@ -5,16 +5,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hvy.blog.entity.AuthorityName;
 import kr.hvy.blog.entity.RsaMap;
-import kr.hvy.blog.entity.User;
 import kr.hvy.blog.model.request.LoginDto;
-import kr.hvy.blog.model.response.LoginResponseDto;
 import kr.hvy.blog.model.response.MyProfileDto;
+import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.JwtUser;
 import kr.hvy.blog.security.RSAEncryptHelper;
 import kr.hvy.blog.service.RsaMapService;
 import kr.hvy.blog.service.UserService;
+import kr.hvy.blog.util.ByteUtil;
 import kr.hvy.blog.util.CookieProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,24 +50,16 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
 
     @Operation(summary = "로그인한 사용자 조회")
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ResponseEntity<?> getMeInfo(Authentication auth) {
 
         // 토큰에서 정보 빼서 넘겨준다
-        byte[] userId = ((JwtUser)auth.getPrincipal()).getId();
-        User user = userService.findById(userId);
-
-        List<AuthorityName> roles = user.getAuthority().stream().map(a -> {
-            return a.getName();
-        }).collect(Collectors.toList());
-
-        MyProfileDto profile = MyProfileDto.builder()
-                .LoginId(user.getUsername())
-                .UserName(user.getName())
-                .Role(roles)
-                .build();
+        byte[] userId = ((JwtUser) auth.getPrincipal()).getId();
+        MyProfileDto profile = userService.getMyProfile(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -108,10 +97,13 @@ public class AuthController {
         String token = userService.login(loginDto);
         ResponseCookie springCookie = CookieProvider.setSpringCookie(tokenHeader, token);
 
+        String hexId = jwtTokenProvider.getUserHexId(token);
+        MyProfileDto profile = userService.getMyProfile(ByteUtil.hexToByteArray(hexId));
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, springCookie.toString())
-                .body(LoginResponseDto.builder().token(token).build());
+                .body(profile);
 
     }
 

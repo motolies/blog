@@ -1,8 +1,10 @@
 package kr.hvy.blog.service;
 
+import kr.hvy.blog.entity.AuthorityName;
 import kr.hvy.blog.entity.RsaMap;
 import kr.hvy.blog.entity.User;
 import kr.hvy.blog.model.request.LoginDto;
+import kr.hvy.blog.model.response.MyProfileDto;
 import kr.hvy.blog.repository.RsaMapRepository;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
@@ -21,6 +23,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +62,22 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return jwtTokenProvider.createToken(user);
+    }
 
+    public MyProfileDto getMyProfile(byte[] userId) {
+        User user = findById(userId);
+
+        List<AuthorityName> roles = user.getAuthority().stream().map(a -> {
+            return a.getName();
+        }).collect(Collectors.toList());
+
+        MyProfileDto profile = MyProfileDto.builder()
+                .LoginId(user.getUsername())
+                .UserName(user.getName())
+                .Role(roles)
+                .build();
+
+        return profile;
     }
 
 }
