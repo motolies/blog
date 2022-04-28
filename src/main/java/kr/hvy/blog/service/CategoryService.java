@@ -1,6 +1,8 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Category;
+import kr.hvy.blog.mapper.CategoryMapper;
+import kr.hvy.blog.model.response.CategoryDto;
 import kr.hvy.blog.repository.CategoryRepository;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,13 @@ public class CategoryService {
     @PersistenceContext
     private EntityManager em;
 
+    private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
+
+
+    public List<CategoryDto> findAllCategory() {
+        return categoryMapper.findAllCategory();
+    }
 
     public MultipleResultSet findCategoryWithProc() throws SQLException {
         EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
@@ -52,10 +60,6 @@ public class CategoryService {
 
     public Category findById(String id) {
         return categoryRepository.findById(id).orElse(null);
-    }
-
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
     }
 
     public Category findRoot() {

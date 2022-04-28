@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Category;
+import kr.hvy.blog.model.response.CategoryDto;
 import kr.hvy.blog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +26,17 @@ import java.sql.SQLException;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+    @Operation(summary = "전체 카테고리 조회(포스트에서 카테고리 표기시에 쓰임)")
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
+    @GetMapping("")
+    public ResponseEntity getCategory() {
+        List<CategoryDto> list = categoryService.findAllCategory();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(list);
+    }
+
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "루트 카테고리 조회")
@@ -35,7 +48,6 @@ public class CategoryController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(category);
-
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
