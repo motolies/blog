@@ -54,6 +54,7 @@ public class AuthController {
 
 
     @Operation(summary = "로그인한 사용자 조회")
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.MyProfileDto.class))})
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ResponseEntity<?> getMeInfo(Authentication auth) {
 
@@ -90,7 +91,7 @@ public class AuthController {
 
 
     @Operation(summary = "로그인")
-    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.LoginResponseDto.class))})
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.MyProfileDto.class))})
     @PostMapping(value = {"login"})
     public ResponseEntity login(@RequestBody LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
 
