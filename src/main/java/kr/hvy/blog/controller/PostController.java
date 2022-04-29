@@ -125,7 +125,7 @@ public class PostController {
     @PostMapping("/public")
     public ResponseEntity changePublic(@RequestBody ContentPublicDto contentPublicDto) {
         Content content = contentService.findById(contentPublicDto.getId());
-        content.setPublic(contentPublicDto.isPublic());
+        content.setPublic(contentPublicDto.isPublicStatus());
         contentService.save(content);
         return ResponseEntity.status(HttpStatus.OK).body(content);
     }
