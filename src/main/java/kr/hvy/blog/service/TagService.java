@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Set;
 
@@ -14,13 +16,18 @@ import java.util.Set;
 @Service
 public class TagService {
 
+    @PersistenceContext
+    private EntityManager em;
+
     private final TagRepository tagRepository;
 
     @Transactional
     public Tag save(Tag tag) {
         Tag existingTag = tagRepository.findByName(tag.getName());
         if (existingTag == null) {
-            return tagRepository.save(tag);
+            tagRepository.saveAndFlush(tag);
+            em.detach(tag);
+            return tagRepository.findById(tag.getId()).orElse(null);
         } else {
             return existingTag;
         }
