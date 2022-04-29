@@ -144,7 +144,7 @@ public class PostController {
     @ApiResponse(responseCode = "200")
     @PostMapping("/{contentId}/tag")
     public ResponseEntity addPostTag(@PathVariable int contentId, @RequestBody ContentTagDto contentTagDto) {
-        Tag tag = tagService.save(Tag.builder().name(contentTagDto.getTagName()).build());
+        Tag tag = tagService.save(Tag.builder().name(contentTagDto.getTagName().trim()).build());
         Content content = contentService.findById(contentId);
         content.addTag(tag);
         contentService.save(content);
