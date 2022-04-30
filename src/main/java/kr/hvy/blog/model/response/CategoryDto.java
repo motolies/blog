@@ -14,4 +14,8 @@ public class CategoryDto implements Serializable {
     private int order;
     private String fullName;
     private String pId;
+
+    public String getLabel() {
+        return name;
+    }
 }
