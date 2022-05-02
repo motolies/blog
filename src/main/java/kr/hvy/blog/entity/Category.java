@@ -10,11 +10,8 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Entity
@@ -92,7 +89,11 @@ public class Category implements Serializable {
 
     @JsonGetter
     private String getTreeName() {
-        long level = this.fullName.chars().filter(f -> f == '/').count() - 3;
+
+        long level = this.fullName.chars().filter(f -> f == '/').count() - 2;
+        if(level == 0) {
+            return this.name;
+        }
         String prefixLevel = "";
         for (int i = 0; i < level; i++) {
             // 공백 특수문자
