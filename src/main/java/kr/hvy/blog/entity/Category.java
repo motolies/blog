@@ -90,17 +90,19 @@ public class Category implements Serializable {
     @JsonGetter
     private String getTreeName() {
 
+        Character c = (char) Integer.parseInt("3000", 16);
+
         long level = this.fullName.chars().filter(f -> f == '/').count() - 2;
-        if(level == 0) {
+        if (level == 0) {
             return this.name;
         }
         String prefixLevel = "";
         for (int i = 0; i < level; i++) {
             // 공백 특수문자
-            Character c = (char) Integer.parseInt("3000", 16);
+
             prefixLevel += c;
         }
-        return prefixLevel + "└─" + this.name;
+        return prefixLevel + "└─" + c + this.name;
     }
 
 
