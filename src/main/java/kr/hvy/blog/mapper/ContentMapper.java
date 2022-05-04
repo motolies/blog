@@ -8,6 +8,6 @@ import java.util.List;
 @Mapper
 public interface ContentMapper {
 
-    List<ContentNoBodyDto> findIdsByConditions(boolean isAdmin, boolean isAnd, String searchType, List<String> conditions, int page, int pageSize);
+    List<ContentNoBodyDto> findIdsByConditions(boolean isAdmin, boolean isAnd, String searchType, List<String> conditions, String categoryId, int page, int pageSize);
 
 }

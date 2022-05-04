@@ -18,6 +18,9 @@
         <if test='isAdmin == false'>
             AND C.ISPUBLIC = 1
         </if>
+        <if test = 'categoryId != null and categoryId neq ""'>
+            AND C.CategoryId = #{categoryId}
+        </if>
         <if test='isAnd == true'>
             AND
             <foreach collection="conditions" index="index" item="con" open="(" separator=" AND " close=")">

@@ -348,7 +348,7 @@ public class ContentService {
         List<String> tmpConditions = isAnd ? Arrays.asList(searchText.split("&")) : Arrays.asList(searchText.split("\\|"));
         List<String> conditions = tmpConditions.stream().map(String::trim).collect(Collectors.toList());
 
-        List<ContentNoBodyDto> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, page, pageSize);
+        List<ContentNoBodyDto> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, categoryId, page, pageSize);
         int count = countMapper.getTotalCount();
 
         Page<ContentNoBodyDto> pager = new Page<>();
