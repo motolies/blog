@@ -33,6 +33,8 @@ public class Category implements Serializable {
     @Column(name = "`Order`", nullable = false, length = 11)
     private int order;
 
+    // TODO : 카테고리 테이블에 fullPath 칼럼이 필요하다
+
     @Column(name = "FullName", nullable = false, length = 512)
     private String fullName;
 
