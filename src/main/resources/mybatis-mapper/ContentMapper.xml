@@ -19,7 +19,7 @@
             AND C.ISPUBLIC = 1
         </if>
         <if test = 'categoryId != null and categoryId neq ""'>
-            AND C.CategoryId = #{categoryId}
+            AND C.CATEGORYID IN (SELECT ID FROM CATEGORY WHERE CAT.FULLPATH LIKE CONCAT('/', #{categoryId}, '/%') )
         </if>
         <if test='isAnd == true'>
             AND
