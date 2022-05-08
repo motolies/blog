@@ -1,5 +1,7 @@
 package kr.hvy.blog.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -11,6 +13,7 @@ import kr.hvy.blog.entity.Tag;
 import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.model.request.ContentPublicDto;
 import kr.hvy.blog.model.request.ContentTagDto;
+import kr.hvy.blog.model.request.SearchObjectDto;
 import kr.hvy.blog.model.response.ContentNoBodyDto;
 import kr.hvy.blog.model.response.DeleteResponseDto;
 import kr.hvy.blog.service.ContentService;
@@ -26,6 +29,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,7 +76,7 @@ public class PostController {
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
     @GetMapping(value = {"/search"})
-    public ResponseEntity getMultipleList2(
+    public ResponseEntity search(
             Authentication auth,
             @RequestParam(defaultValue = "TITLE") String searchType,
             @RequestParam(defaultValue = "") String searchText,
@@ -79,6 +84,24 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "100") int pageSize) {
         Page<ContentNoBodyDto> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
+        return ResponseEntity.status(HttpStatus.OK).body(contentPage);
+    }
+
+    @Operation(summary = "검색상세")
+    @Parameter(name = "query", description = "BASE64로 인코딩한 파라미터(json object)", required = true)
+    @ApiResponse(responseCode = "200",
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
+    )
+    @GetMapping(value = {"/search/detail"})
+    public ResponseEntity searchDetail(
+            Authentication auth,
+            @RequestParam String query) throws JsonProcessingException {
+        String decodedQuery = new String(Base64.getDecoder().decode(query), StandardCharsets.UTF_8);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchObjectDto dto = objectMapper.readValue(decodedQuery, SearchObjectDto.class);
+        log.info(dto.toString());
+        // TODO : 검색 dto에 맞는 검색기능을 만들어야 한다.
+        Page<ContentNoBodyDto> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), "TITLE", "검색", null, 1, 10);
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 
