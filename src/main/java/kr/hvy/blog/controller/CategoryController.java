@@ -51,7 +51,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "카테고리 저장")
+    @Operation(summary = "카테고리 저장", description = "id, name, parent 가 최소 정보이다.")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @PostMapping("")
     public ResponseEntity<?> saveCategory(@RequestBody Category category) throws SQLException {

@@ -33,10 +33,12 @@ public class Category implements Serializable {
     @Column(name = "`Order`", nullable = false, length = 11)
     private int order;
 
-    // TODO : 카테고리 테이블에 fullPath 칼럼이 필요하다
-
     @Column(name = "FullName", nullable = false, length = 512)
     private String fullName;
+
+    @Column(name = "FullPath", nullable = false, length = 512)
+    private String fullPath;
+
 
     // 제네릭 생성과 초기화를 한 번에 하는 방법
     // https://www.baeldung.com/java-initialize-hashmap
@@ -120,6 +122,7 @@ public class Category implements Serializable {
 
     public void cleanUp() {
         this.fullName = "/" + this.name + "/";
+        this.fullPath = "/" + this.name + "/";
     }
 
 }

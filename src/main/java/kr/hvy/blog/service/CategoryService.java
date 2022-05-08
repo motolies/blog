@@ -88,12 +88,13 @@ public class CategoryService {
 
         try {
             conn = info.getDataSource().getConnection();
-            CallableStatement callableSt = conn.prepareCall("{call usp_category_save(?, ?, ?, ?, ?)}");
+            CallableStatement callableSt = conn.prepareCall("{call usp_category_save(?, ?, ?, ?, ?, ?)}");
             callableSt.setString(1, cat.getId());
             callableSt.setString(2, cat.getName());
             callableSt.setInt(3, cat.getOrder());
             callableSt.setString(4, cat.getFullName());
-            callableSt.setString(5, cat.getPId());
+            callableSt.setString(5, cat.getFullPath());
+            callableSt.setString(6, cat.getPId());
 
             callableSt.execute();
             callableSt.close();
