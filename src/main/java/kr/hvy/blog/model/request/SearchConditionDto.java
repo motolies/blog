@@ -17,8 +17,8 @@ public class SearchConditionDto implements Serializable {
     @Schema(name = "logic", example = "AND | OR")
     private String logic;
 
-    @Schema(name = "keywords", example = "[\"검색\", \"키워드\"]")
-    private List<String> keywords;
+    @Schema(name = "keywords", example = "[{\"name\": \"검색어\"}]")
+    private List<SearchElementDto> keywords;
 
     @Override
     public String toString() {

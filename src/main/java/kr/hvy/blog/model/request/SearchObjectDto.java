@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -19,9 +18,11 @@ public class SearchObjectDto implements Serializable {
 
     private SearchConditionDto searchCondition;
 
-    private List<String> categoryIds;
+    @Schema(name = "categories", example = "[{\"id\": \"ROOT\", \"name\": \"전체글\"}]")
+    private List<SearchElementDto> categories;
 
-    private List<String> tagIds;
+    @Schema(name = "categories", example = "[{\"id\": \"1\", \"name\": \"Java\"}]")
+    private List<SearchElementDto> tags;
 
     private int page;
 
@@ -32,8 +33,8 @@ public class SearchObjectDto implements Serializable {
         return "SearchObjectDto{" +
                 "searchType='" + searchType + '\'' +
                 ", searchCondition=" + searchCondition +
-                ", categoryIds=" + categoryIds +
-                ", tagIds=" + tagIds +
+                ", categories=" + categories +
+                ", tags=" + tags +
                 ", page=" + page +
                 ", pageSize=" + pageSize +
                 '}';
