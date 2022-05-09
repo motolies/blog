@@ -22,6 +22,13 @@ public class TagController {
 
     private final TagService tagService;
 
+    @Operation(summary = "모든 태그 조회")
+    @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
+    @GetMapping("/all")
+    public ResponseEntity getAllTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
+    }
+
     @Operation(summary = "태그 검색")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @GetMapping("")
