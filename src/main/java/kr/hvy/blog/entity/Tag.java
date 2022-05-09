@@ -1,5 +1,6 @@
 package kr.hvy.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import lombok.*;
@@ -38,5 +39,10 @@ public class Tag implements Serializable {
 
     @Formula("(select count(*) from content_tag_map as m where m.TagId = id)")
     private int ContentCount;
+
+    @JsonGetter("label")
+    public String getLabel() {
+        return name;
+    }
 
 }
