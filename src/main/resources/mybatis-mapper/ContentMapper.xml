@@ -18,7 +18,7 @@
         <if test='isAdmin == false'>
             AND C.ISPUBLIC = 1
         </if>
-        <if test = 'categoryId != null and categoryId neq ""'>
+        <if test='categoryId != null and categoryId neq ""'>
             AND C.CATEGORYID IN (SELECT ID FROM CATEGORY WHERE CAT.FULLPATH LIKE CONCAT('/', #{categoryId}, '/%') )
         </if>
         <if test='isAnd == true'>
@@ -53,6 +53,50 @@
                 </choose>
             </foreach>
         </if>
+        ORDER BY C.CREATEDATE DESC
+    </select>
+
+    <select id="findBySearchObject" parameterType="SearchObjectDto" resultType="ContentNoBodyDto">
+        SELECT SQL_CALC_FOUND_ROWS
+        C.ID
+        , C.SUBJECT AS SUBJECT
+        , CAT.NAME AS CATEGORY_NAME
+        , C.VIEWCOUNT AS VIEW_COUNT
+        , C.CREATEDATE AS CREATE_DATE
+        , C.UPDATEDATE AS UPDATE_DATE
+        FROM CONTENT AS C
+        JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
+        WHERE 1 = 1
+        <if test='isAdmin == false'>
+            AND C.ISPUBLIC = 1
+        </if>
+        <if test='obj.categories.size > 0'>
+            AND C.CATEGORYID IN (
+            SELECT ID
+            FROM CATEGORY
+            WHERE
+            <foreach collection="obj.categories" item="category" separator=" OR ">
+                CAT.FULLPATH LIKE CONCAT('/', #{category.id}, '/%')
+            </foreach>
+            )
+        </if>
+        <if test='obj.searchCondition.logic.equals("AND")'>
+            AND
+            <foreach collection="obj.searchCondition.keywords" index="index" item="key" open="(" separator=" obj.searchCondition.logic " close=")">
+                <choose>
+                    <when test='obj.searchType.equals("TITLE")'>
+                        C.SUBJECT LIKE CONCAT('%', #{key.name}, '%')
+                    </when>
+                    <when test='obj.searchType.equals("CONTENT")'>
+                        C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                    </when>
+                    <otherwise>
+                        C.SUBJECT LIKE CONCAT('%', #{key.name}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                    </otherwise>
+                </choose>
+            </foreach>
+        </if>
+
         ORDER BY C.CREATEDATE DESC
     </select>
 

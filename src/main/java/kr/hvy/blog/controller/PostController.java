@@ -101,7 +101,7 @@ public class PostController {
         SearchObjectDto dto = objectMapper.readValue(decodedQuery, SearchObjectDto.class);
         log.info(dto.toString());
         // TODO : 검색 dto에 맞는 검색기능을 만들어야 한다.
-        Page<ContentNoBodyDto> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), "TITLE", "검색", null, 1, 10);
+        Page<ContentNoBodyDto> contentPage = contentService.findBySearchObject(AuthorizationUtil.hasAdminRole(), dto);
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
 

@@ -7,6 +7,7 @@ import kr.hvy.blog.entity.User;
 import kr.hvy.blog.mapper.ContentMapper;
 import kr.hvy.blog.mapper.CountMapper;
 import kr.hvy.blog.model.base.Page;
+import kr.hvy.blog.model.request.SearchObjectDto;
 import kr.hvy.blog.model.response.ContentNoBodyDto;
 import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.TagRepository;
@@ -363,6 +364,18 @@ public class ContentService {
 
     public List<Content> findContentsByIdInOrderByCreateDateDesc(List<Integer> ids) {
         return contentRepository.findContentsByIdInOrderByCreateDateDesc(ids);
+    }
+
+    public Page<ContentNoBodyDto> findBySearchObject(boolean isAdmin, SearchObjectDto searchObjectDto) {
+        List<ContentNoBodyDto> list = contentMapper.findBySearchObject(isAdmin, searchObjectDto);
+        int count = countMapper.getTotalCount();
+
+        Page<ContentNoBodyDto> pager = new Page<>();
+        pager.setList(list);
+        pager.setPage(searchObjectDto.getPage());
+        pager.setPageSize(searchObjectDto.getPageSize());
+        pager.setTotalCount(count);
+        return pager;
     }
 
 
