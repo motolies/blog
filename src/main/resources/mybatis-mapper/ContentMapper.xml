@@ -56,7 +56,16 @@
         ORDER BY C.CREATEDATE DESC
     </select>
 
-    <select id="findBySearchObject" parameterType="SearchObjectDto" resultType="ContentNoBodyDto">
+    <resultMap id="noBodyContent" type="ContentNoBodyDto">
+        <id property="id" column="ID"/>
+        <result property="subject" column="SUBJECT"/>
+        <result property="categoryName" column="CATEGORY_NAME"/>
+        <result property="viewCount" column="VIEW_COUNT"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+    </resultMap>
+
+    <select id="findBySearchObject" parameterType="SearchObjectDto" resultMap="noBodyContent">
         SELECT SQL_CALC_FOUND_ROWS
         C.ID
         , C.SUBJECT AS SUBJECT
@@ -65,7 +74,8 @@
         , C.CREATEDATE AS CREATE_DATE
         , C.UPDATEDATE AS UPDATE_DATE
         FROM CONTENT AS C
-        JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
+        LEFT JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
+        LEFT JOIN CONTENT_TAG_MAP AS MAP ON MAP.CONTENTID = C.ID
         WHERE 1 = 1
         <if test='isAdmin == false'>
             AND C.ISPUBLIC = 1
@@ -76,27 +86,52 @@
             FROM CATEGORY
             WHERE
             <foreach collection="obj.categories" item="category" separator=" OR ">
-                CAT.FULLPATH LIKE CONCAT('/', #{category.id}, '/%')
+                /* TODO : 당장은 양쪽 라이크로 하지만 차후에는 category.id를 가지고 fullpath를 가져온 다음 fullpath로 like 검색을 하자 */
+                CAT.FULLPATH LIKE CONCAT('%/', #{category.id}, '/%')
             </foreach>
             )
         </if>
-        <if test='obj.searchCondition.logic.equals("AND")'>
-            AND
-            <foreach collection="obj.searchCondition.keywords" index="index" item="key" open="(" separator=" obj.searchCondition.logic " close=")">
-                <choose>
-                    <when test='obj.searchType.equals("TITLE")'>
-                        C.SUBJECT LIKE CONCAT('%', #{key.name}, '%')
-                    </when>
-                    <when test='obj.searchType.equals("CONTENT")'>
-                        C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
-                    </when>
-                    <otherwise>
-                        C.SUBJECT LIKE CONCAT('%', #{key.name}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
-                    </otherwise>
-                </choose>
+        <if test='obj.searchCondition.keywords.size > 0'>
+            <if test='obj.searchCondition.logic.equals("AND")'>
+                AND
+                <foreach collection="obj.searchCondition.keywords" index="index" item="key" open="(" separator=" AND " close=")">
+                    <choose>
+                        <when test='obj.searchType.equals("TITLE")'>
+                            C.SUBJECT LIKE CONCAT('%', #{key.name}, '%')
+                        </when>
+                        <when test='obj.searchType.equals("CONTENT")'>
+                            C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                        </when>
+                        <otherwise>
+                            C.SUBJECT LIKE CONCAT('%', #{key.name}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                        </otherwise>
+                    </choose>
+                </foreach>
+            </if>
+            <if test='!obj.searchCondition.logic.equals("AND")'>
+                AND
+                <foreach collection="obj.searchCondition.keywords" index="index" item="key" open="(" separator=" OR " close=")">
+                    <choose>
+                        <when test='obj.searchType.equals("TITLE")'>
+                            C.SUBJECT LIKE CONCAT('%', #{key.name}, '%')
+                        </when>
+                        <when test='obj.searchType.equals("CONTENT")'>
+                            C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                        </when>
+                        <otherwise>
+                            C.SUBJECT LIKE CONCAT('%', #{key.name}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{key.name}, '%')
+                        </otherwise>
+                    </choose>
+                </foreach>
+            </if>
+        </if>
+        <if test='obj.tags.size > 0'>
+            AND MAP.TAGID IN
+            <foreach collection="obj.tags" item="tag" open="(" separator=", " close=")">
+                #{tag.id}
             </foreach>
         </if>
-
+        GROUP BY C.ID , C.SUBJECT , CAT.NAME , C.VIEWCOUNT , C.CREATEDATE , C.UPDATEDATE
         ORDER BY C.CREATEDATE DESC
     </select>
 

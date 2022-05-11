@@ -1,6 +1,7 @@
 package kr.hvy.blog.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,10 +98,14 @@ public class PostController {
             Authentication auth,
             @RequestParam String query) throws JsonProcessingException {
         String decodedQuery = new String(Base64.getDecoder().decode(query), StandardCharsets.UTF_8);
+
+        // https://stackoverflow.com/questions/4486787/jackson-with-json-unrecognized-field-not-marked-as-ignorable
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         SearchObjectDto dto = objectMapper.readValue(decodedQuery, SearchObjectDto.class);
+
         log.info(dto.toString());
-        // TODO : 검색 dto에 맞는 검색기능을 만들어야 한다.
         Page<ContentNoBodyDto> contentPage = contentService.findBySearchObject(AuthorizationUtil.hasAdminRole(), dto);
         return ResponseEntity.status(HttpStatus.OK).body(contentPage);
     }
