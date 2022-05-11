@@ -4,58 +4,6 @@
 
 <mapper namespace="kr.hvy.blog.mapper.ContentMapper">
 
-    <select id="findIdsByConditions" resultType="ContentNoBodyDto">
-        SELECT SQL_CALC_FOUND_ROWS
-        C.ID
-        , C.SUBJECT AS SUBJECT
-        , CAT.NAME AS CATEGORY_NAME
-        , C.VIEWCOUNT AS VIEW_COUNT
-        , C.CREATEDATE AS CREATE_DATE
-        , C.UPDATEDATE AS UPDATE_DATE
-        FROM CONTENT AS C
-        JOIN CATEGORY CAT ON C.CATEGORYID = CAT.ID
-        WHERE 1 = 1
-        <if test='isAdmin == false'>
-            AND C.ISPUBLIC = 1
-        </if>
-        <if test='categoryId != null and categoryId neq ""'>
-            AND C.CATEGORYID IN (SELECT ID FROM CATEGORY WHERE CAT.FULLPATH LIKE CONCAT('/', #{categoryId}, '/%') )
-        </if>
-        <if test='isAnd == true'>
-            AND
-            <foreach collection="conditions" index="index" item="con" open="(" separator=" AND " close=")">
-                <choose>
-                    <when test='searchType.equals("TITLE")'>
-                        C.SUBJECT LIKE CONCAT('%', #{con}, '%')
-                    </when>
-                    <when test='searchType.equals("CONTENT")'>
-                        C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
-                    </when>
-                    <otherwise>
-                        C.SUBJECT LIKE CONCAT('%', #{con}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
-                    </otherwise>
-                </choose>
-            </foreach>
-        </if>
-        <if test='isAnd == false'>
-            AND
-            <foreach collection="conditions" index="index" item="con" open="(" separator=" OR " close=")">
-                <choose>
-                    <when test='searchType.equals("TITLE")'>
-                        C.SUBJECT LIKE CONCAT('%', #{con}, '%')
-                    </when>
-                    <when test='searchType.equals("CONTENT")'>
-                        C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
-                    </when>
-                    <otherwise>
-                        C.SUBJECT LIKE CONCAT('%', #{con}, '%') OR C.NORMALBODY LIKE CONCAT('%', #{con}, '%')
-                    </otherwise>
-                </choose>
-            </foreach>
-        </if>
-        ORDER BY C.CREATEDATE DESC
-    </select>
-
     <resultMap id="noBodyContent" type="ContentNoBodyDto">
         <id property="id" column="ID"/>
         <result property="subject" column="SUBJECT"/>

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import kr.hvy.blog.entity.Content;
@@ -64,36 +62,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findByIdAndAuthorization(contentId));
     }
 
-
-    @Operation(summary = "검색")
-    @Parameters({
-            @Parameter(name = "searchType", description = "TITLE / CONTENT / FULL(모두)", in = ParameterIn.QUERY),
-            @Parameter(name = "searchText", description = "검색어( `|`, `&`) 사용가능 ", in = ParameterIn.QUERY),
-            @Parameter(name = "categoryId", description = "카테고리 아이디", in = ParameterIn.QUERY),
-            @Parameter(name = "page", description = "페이지", example = "1", in = ParameterIn.QUERY),
-            @Parameter(name = "pageSize", description = "리스트 목록수", example = "10", in = ParameterIn.QUERY)
-    })
-    @ApiResponse(responseCode = "200",
-            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
-    )
-    @GetMapping(value = {"/search"})
-    public ResponseEntity search(
-            Authentication auth,
-            @RequestParam(defaultValue = "TITLE") String searchType,
-            @RequestParam(defaultValue = "") String searchText,
-            @RequestParam(defaultValue = "") String categoryId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "100") int pageSize) {
-        Page<ContentNoBodyDto> contentPage = contentService.findIdsByConditions(AuthorizationUtil.hasAdminRole(), searchType, searchText, categoryId, page, pageSize);
-        return ResponseEntity.status(HttpStatus.OK).body(contentPage);
-    }
-
     @Operation(summary = "검색상세")
     @Parameter(name = "query", description = "BASE64로 인코딩한 파라미터(json object)", required = true)
     @ApiResponse(responseCode = "200",
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
-    @GetMapping(value = {"/search/detail"})
+    @GetMapping(value = {"/search"})
     public ResponseEntity searchDetail(
             Authentication auth,
             @RequestParam String query) throws JsonProcessingException {

@@ -25,7 +25,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -333,37 +332,6 @@ public class ContentService {
                 e.printStackTrace();
             }
         }
-    }
-
-    public Page<ContentNoBodyDto> findIdsByConditions(boolean isAdmin, String searchType, String searchText, String categoryId, int page, int pageSize) {
-        // tag =
-        //########### 아래가 준비된 것
-        // admin =
-        // isAnd = else or
-        // searchText = &(and), |(or)
-        // searchText array
-        // searchType = TITLE, CONTENT, FULL
-        // categoryId =
-
-        boolean isAnd = searchText.contains("&");
-        List<String> tmpConditions = isAnd ? Arrays.asList(searchText.split("&")) : Arrays.asList(searchText.split("\\|"));
-        List<String> conditions = tmpConditions.stream().map(String::trim).collect(Collectors.toList());
-
-        List<ContentNoBodyDto> list = contentMapper.findIdsByConditions(isAdmin, isAnd, searchType, conditions, categoryId, page, pageSize);
-        int count = countMapper.getTotalCount();
-
-        Page<ContentNoBodyDto> pager = new Page<>();
-        pager.setList(list);
-        pager.setPage(page);
-        pager.setPageSize(pageSize);
-        pager.setTotalCount(count);
-
-        return pager;
-
-    }
-
-    public List<Content> findContentsByIdInOrderByCreateDateDesc(List<Integer> ids) {
-        return contentRepository.findContentsByIdInOrderByCreateDateDesc(ids);
     }
 
     public Page<ContentNoBodyDto> findBySearchObject(boolean isAdmin, SearchObjectDto searchObjectDto) {
