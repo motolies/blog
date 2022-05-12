@@ -150,7 +150,7 @@ public class PostController {
         Content content = contentService.findById(contentId);
         content.addTag(tag);
         contentService.save(content);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(tag);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
