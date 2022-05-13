@@ -81,6 +81,7 @@
         </if>
         GROUP BY C.ID , C.SUBJECT , CAT.NAME , C.VIEWCOUNT , C.CREATEDATE , C.UPDATEDATE
         ORDER BY C.CREATEDATE DESC
+        LIMIT #{obj.offset}, #{obj.pageSize}
     </select>
 
 </mapper>

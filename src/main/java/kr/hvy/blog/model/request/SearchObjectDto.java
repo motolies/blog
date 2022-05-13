@@ -24,6 +24,10 @@ public class SearchObjectDto implements Serializable {
     @Schema(name = "categories", example = "[{\"id\": \"1\", \"name\": \"Java\"}]")
     private List<SearchElementDto> tags;
 
+    public int getOffset() {
+        return (page - 1) * pageSize;
+    }
+
     private int page;
 
     private int pageSize;
