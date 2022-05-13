@@ -49,6 +49,9 @@ public class ContentService {
 
     private final TagRepository tagRepository;
 
+    public List<Content> findAll() {
+        return contentRepository.findAll();
+    }
 
     public Content newContent() {
         User user = userRepository.findById(AuthorizationUtil.getUserId()).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
