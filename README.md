@@ -44,8 +44,12 @@ docker run -d --restart=unless-stopped \
 --pull always \
 -p 9999:8080 \
 -e DB_URL=mariadb:3306 --link mariadb \
+-e FILE_PATH=/skyscape/file
+-v /skyscape/file:/skyscape/file
 --name blogback docker.hvy.kr/blog-back
 
+# 실행(테스트용 - windows)
+docker run -d --restart=unless-stopped --pull always -p 9999:8080 -e DB_URL=mariadb:3306 --link mariadb -e FILE_PATH="/skyscape/file" -v "C:\Users\user\skyscape\file:/skyscape/file" --name blogback docker.hvy.kr/blog-back
 
 # 실행(프로덕션)
 docker run -d --restart=unless-stopped \
