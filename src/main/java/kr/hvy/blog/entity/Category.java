@@ -52,17 +52,14 @@ public class Category implements Serializable {
     @GenericGenerator(name = "CATEGORY_PID_CATEGORYID_GENERATOR", strategy = "foreign", parameters = @Parameter(name = "property", value = "p"))
     private String pId;
 
-    @JsonProperty("pId")
-    public String getPId() {
-        return this.pId;
+    @JsonSetter("pId")
+    public void setPId(String pId) {
+        this.pId = pId;
     }
 
-    @JsonProperty("parent")
-    public void setPId(String pId) {
-        if (pId.equals("#"))
-            this.pId = null;
-        else
-            this.pId = pId;
+    @JsonGetter("pId")
+    public String getPId() {
+        return this.pId;
     }
 
     @JsonBackReference
