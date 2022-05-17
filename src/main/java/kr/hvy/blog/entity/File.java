@@ -76,7 +76,7 @@ public class File {
 
     private void makeResourceUri() {
         this.createDate = TimeUtil.getUtcTimestamp();
-        this.resourceUri = "/file?id=" + ByteUtil.byteArrayToHex(this.id);
+        this.resourceUri = "/api/file/" + ByteUtil.byteArrayToHex(this.id);
     }
 
 }
