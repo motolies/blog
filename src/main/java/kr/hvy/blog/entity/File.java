@@ -1,9 +1,6 @@
 package kr.hvy.blog.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import kr.hvy.blog.util.ByteUtil;
 import kr.hvy.blog.util.TimeUtil;
@@ -55,6 +52,7 @@ public class File {
     @Column(name = "FileSize", nullable = false, columnDefinition = "BIGINT")
     private long fileSize;
 
+    @JsonProperty("isDelete")
     @Column(name = "IsDelete", nullable = false, length = 1)
     private boolean isDelete;
 

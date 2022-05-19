@@ -1,6 +1,7 @@
 package kr.hvy.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.hvy.blog.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,9 +69,11 @@ public class Content implements Serializable {
     @JoinColumns(value = {@JoinColumn(name = "CategoryId", referencedColumnName = "Id", nullable = false)}, foreignKey = @ForeignKey(name = "fk_content_categoryid_category_id"))
     private Category category;
 
+    @JsonProperty("isPublic")
     @Column(name = "IsPublic", nullable = false, length = 1)
     private boolean isPublic = false;
 
+    @JsonProperty("isMain")
     @Column(name = "IsMain", nullable = false, length = 1)
     private boolean isMain = false;
 
