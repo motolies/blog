@@ -95,7 +95,7 @@ public class PostController {
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "포스트 저장(PUT으로 변경해야 할 것 같다.)")
+    @Operation(summary = "포스트 저장")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PutMapping("/{contentId}")
     public ResponseEntity savePost(@PathVariable int contentId, @Valid @RequestBody Content newContent, BindingResult bindingResult) {

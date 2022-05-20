@@ -2,7 +2,6 @@ package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Category;
 import kr.hvy.blog.entity.Content;
-import kr.hvy.blog.entity.Tag;
 import kr.hvy.blog.entity.User;
 import kr.hvy.blog.mapper.ContentMapper;
 import kr.hvy.blog.mapper.CountMapper;
@@ -25,10 +24,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -96,21 +92,23 @@ public class ContentService {
         content.setSubject(newContent.getSubject());
         content.setBody(newContent.getBody());
         content.setCategoryId(newContent.getCategoryId());
+        content.setPublic(newContent.isPublic());
 
-        // 기존꺼 삭제
-        Set<Tag> oldTags = tagRepository.findByIdIn(content.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
-        for (Tag tag : oldTags) {
-            content.removeTag(tag);
-        }
-
-        // 신규 추가
-        Set<Tag> newTags = new HashSet<>();
-        if (newContent.getTag().size() > 0) {
-            newTags = tagRepository.findByIdIn(newContent.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
-        }
-        for (Tag tag : newTags) {
-            content.addTag(tag);
-        }
+        // 태그도 바로바로 달도록 하면 별도로 여기서 관리하지 않아도 되겠다.
+//        // 기존꺼 삭제
+//        Set<Tag> oldTags = tagRepository.findByIdIn(content.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
+//        for (Tag tag : oldTags) {
+//            content.removeTag(tag);
+//        }
+//
+//        // 신규 추가
+//        Set<Tag> newTags = new HashSet<>();
+//        if (newContent.getTag().size() > 0) {
+//            newTags = tagRepository.findByIdIn(newContent.getTag().stream().map(t -> t.getId()).collect(Collectors.toSet()));
+//        }
+//        for (Tag tag : newTags) {
+//            content.addTag(tag);
+//        }
 
         contentRepository.saveAndFlush(content);
         int contentId = content.getId();
