@@ -91,6 +91,10 @@ public class ContentService {
     public Content update(Content content, Content newContent) {
         content.setSubject(newContent.getSubject());
         content.setBody(newContent.getBody());
+
+        Category cat = categoryService.findById(newContent.getCategoryId());
+        content.setCategory(cat);
+
         content.setCategoryId(newContent.getCategoryId());
         content.setPublic(newContent.isPublic());
 
