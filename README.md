@@ -54,10 +54,10 @@ docker run -d --restart=unless-stopped --pull always -p 9999:8080 -e DB_URL=mari
 # 실행(프로덕션)
 docker run -d --restart=unless-stopped \
 --pull always \
--p 8080:8080 \
--e DB_URL=mariadb:3306 --link mariadb \
+-p 9090:8080 \
+-e DB_URL=blogdb:3306 --link blogdb \
 -v /volume1/docker/blog/file:/skyscape/file \
---name blogback docker.hvy.kr/blog
+--name blogback docker.hvy.kr/blog-back
 ```
 
 
