@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.servlet.http.HttpServletRequest;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -93,10 +94,10 @@ public class AuthController {
     @Operation(summary = "로그인")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.MyProfileDto.class))})
     @PostMapping(value = {"login"})
-    public ResponseEntity login(@RequestBody LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
+    public ResponseEntity login(HttpServletRequest request, @RequestBody LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
 
         String token = userService.login(loginDto);
-        ResponseCookie springCookie = CookieProvider.setSpringCookie(tokenHeader, token);
+        ResponseCookie springCookie = CookieProvider.setSpringCookie(request, tokenHeader, token);
 
         String hexId = jwtTokenProvider.getUserHexId(token);
         MyProfileDto profile = userService.getMyProfile(ByteUtil.hexToByteArray(hexId));
@@ -112,8 +113,8 @@ public class AuthController {
     @Operation(summary = "로그아웃")
     @ApiResponse(responseCode = "200")
     @GetMapping(value = {"logout"})
-    public ResponseEntity logout() {
-        ResponseCookie springCookie = CookieProvider.removeSpringCookie(tokenHeader);
+    public ResponseEntity logout(HttpServletRequest request) {
+        ResponseCookie springCookie = CookieProvider.removeSpringCookie(request, tokenHeader);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, springCookie.toString())
