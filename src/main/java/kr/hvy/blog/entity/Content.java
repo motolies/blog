@@ -134,10 +134,9 @@ public class Content implements Serializable {
     @Formula(value = "(SELECT ca.name FROM Content as c JOIN Category as ca ON c.categoryId = ca.id WHERE c.id = id)")
     private String categoryName;
 
-    @Formula(value = "(SELECT IFNULL(MIN(n.id),0) FROM Content as n WHERE n.id > id)")
-    private int next;
-
-    @Formula(value = "(SELECT IFNULL(MAX(p.id),0) FROM Content as p WHERE p.id < id)")
+    @Transient
     private int prev;
 
+    @Transient
+    private int next;
 }

@@ -59,7 +59,7 @@ public class PostController {
     )
     @GetMapping(value = {"/{contentId}"})
     public ResponseEntity getContent(@PathVariable int contentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(contentService.findByIdAndAuthorization(contentId));
+        return ResponseEntity.status(HttpStatus.OK).body(contentService.findById(contentId));
     }
 
     @Operation(summary = "검색상세")

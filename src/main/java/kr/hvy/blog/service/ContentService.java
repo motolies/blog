@@ -5,6 +5,7 @@ import kr.hvy.blog.entity.Content;
 import kr.hvy.blog.entity.User;
 import kr.hvy.blog.mapper.ContentMapper;
 import kr.hvy.blog.mapper.CountMapper;
+import kr.hvy.blog.model.ContentPrevNext;
 import kr.hvy.blog.model.base.Page;
 import kr.hvy.blog.model.request.SearchObjectDto;
 import kr.hvy.blog.model.response.ContentNoBodyDto;
@@ -62,24 +63,17 @@ public class ContentService {
         return contentRepository.findById(contentId).orElseThrow(() -> new IllegalArgumentException("컨텐츠가 존재하지 않습니다."));
     }
 
-    public Content findByIdAndAuthorization(int id) {
+    public Content findById(int id) {
         Content content = contentRepository.findById(id).orElse(null);
 
         if (content == null || (!content.isPublic() && !AuthorizationUtil.hasAdminRole())) {
-            content = new Content();
+            content = null;
         } else {
             content.setViewCount(content.getViewCount() + 1);
+            setPrevNext(content);
             this.save(content);
         }
         return content;
-    }
-
-    public Content findById(int id) {
-        return contentRepository.findById(id).orElse(null);
-    }
-
-    public Content findBySyncKey(String synckey) {
-        return contentRepository.findBySyncKey(synckey);
     }
 
     @Transactional
@@ -120,6 +114,11 @@ public class ContentService {
         return contentRepository.findById(contentId).orElse(null);
     }
 
+    private void setPrevNext(Content content) {
+        ContentPrevNext prevNext = contentMapper.findPrevNextById(AuthorizationUtil.hasAdminRole(), content.getId());
+        content.setPrev(prevNext.getPrev());
+        content.setNext(prevNext.getNext());
+    }
 
     public Content findByMain() {
         Content content = contentRepository.findByIsMainTrue();
@@ -128,6 +127,7 @@ public class ContentService {
             content = new Content();
         } else {
             content.setViewCount(content.getViewCount() + 1);
+            setPrevNext(content);
             this.save(content);
         }
         return content;

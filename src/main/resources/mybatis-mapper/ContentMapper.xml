@@ -84,4 +84,29 @@
         LIMIT #{obj.offset}, #{obj.pageSize}
     </select>
 
+    <select id="findPrevNextById" resultType="ContentPrevNext">
+        SELECT
+        (
+        <![CDATA[
+         SELECT ID
+           FROM CONTENT
+          WHERE ID < #{id}
+         ]]>
+        <if test='isAdmin == false'>
+            AND ISPUBLIC = 1
+        </if>
+        ORDER BY ID DESC
+        LIMIT 1) AS PREV
+        , (SELECT ID
+        FROM CONTENT
+        WHERE ID > #{id}
+        <if test='isAdmin == false'>
+            AND ISPUBLIC = 1
+        </if>
+        ORDER BY ID ASC
+        LIMIT 1) AS NEXT
+        FROM DUAL;
+    </select>
+
+
 </mapper>
