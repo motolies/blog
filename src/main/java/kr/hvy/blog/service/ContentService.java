@@ -131,6 +131,10 @@ public class ContentService {
         content.setNext(prevNext.getNext());
     }
 
+    public ContentPrevNext findPrevNextById(int id) {
+        return contentMapper.findPrevNextById(AuthorizationUtil.hasAdminRole(), id);
+    }
+
     public Content findByMain() {
         Content content = contentRepository.findByIsMainTrue();
 

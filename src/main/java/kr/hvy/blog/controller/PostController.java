@@ -62,6 +62,15 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findById(contentId));
     }
 
+    @Operation(summary = "포스트 이전/이후 글 번호 조회")
+    @ApiResponse(responseCode = "200",
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
+    )
+    @GetMapping(value = {"/prev-next/{contentId}"})
+    public ResponseEntity getContentPrevNext(@PathVariable int contentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(contentService.findPrevNextById(contentId));
+    }
+
     @Operation(summary = "검색상세")
     @Parameter(name = "query", description = "BASE64로 인코딩한 파라미터(json object)", required = true)
     @ApiResponse(responseCode = "200",
