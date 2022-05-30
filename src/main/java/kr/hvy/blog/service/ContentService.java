@@ -13,14 +13,18 @@ import kr.hvy.blog.repository.ContentRepository;
 import kr.hvy.blog.repository.TagRepository;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.util.AuthorizationUtil;
+import kr.hvy.blog.util.FileUtil;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,6 +49,13 @@ public class ContentService {
     private final ContentMapper contentMapper;
 
     private final TagRepository tagRepository;
+
+    private static Path rootLocation;
+
+    @Value("${path.upload}")
+    public void setRootLocation(String path) {
+        this.rootLocation = Paths.get(path);
+    }
 
     public List<Content> findAll() {
         return contentRepository.findAll();
@@ -135,6 +146,10 @@ public class ContentService {
 
     @Transactional
     public void deleteById(int id) {
+        Content content = contentRepository.findById(id).orElse(null);
+        if (content != null && content.getFile().size() > 0) {
+            FileUtil.deleteFolder(rootLocation.toString(), id);
+        }
         contentRepository.deleteById(id);
     }
 
@@ -316,26 +331,10 @@ public class ContentService {
         }
     }
 
-
     public void deleteTempContent() {
-        EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
-        Connection conn = null;
-
-        try {
-            conn = info.getDataSource().getConnection();
-            CallableStatement callableSt = conn.prepareCall("{call usp_temp_content_delete()}");
-            callableSt.execute();
-            callableSt.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            try {
-                if (!conn.isClosed())
-                    conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        List<Integer> tempList = contentMapper.findByTempContent();
+        for (Integer id : tempList) {
+            deleteById(id);
         }
     }
 

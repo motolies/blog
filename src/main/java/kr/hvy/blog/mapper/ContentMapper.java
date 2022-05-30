@@ -15,4 +15,6 @@ public interface ContentMapper {
 
     ContentPrevNext findPrevNextById(boolean isAdmin, int id);
 
+    List<Integer> findByTempContent();
+
 }

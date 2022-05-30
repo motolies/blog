@@ -2,6 +2,7 @@ package kr.hvy.blog.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -101,6 +102,11 @@ public class FileUtil {
     public static void deleteFile(String uploadPath, String fileName) {
         File file = new File(uploadPath + File.separatorChar + fileName);
         file.delete();
+    }
+
+    public static void deleteFolder(String uploadPath, int contentId) {
+        String targetFolder = (uploadPath + File.separatorChar + calcGroupPath(contentId) + File.separatorChar + contentId);
+        FileSystemUtils.deleteRecursively(new File(targetFolder));
     }
 
 }

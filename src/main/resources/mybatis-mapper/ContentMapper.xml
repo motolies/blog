@@ -108,5 +108,12 @@
         FROM DUAL;
     </select>
 
+    <select id="findByTempContent" resultType="Integer">
+        SELECT ID
+          FROM CONTENT
+         WHERE SUBJECT = ''
+           AND BODY = ''
+    </select>
+
 
 </mapper>
