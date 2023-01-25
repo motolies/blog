@@ -37,6 +37,9 @@ COPY --from=builder --chown=boot:spring /usr/src/app/${JAR_FILE} ./app.jar
 #USER boot
 
 ENV DB_URL mariadb:3306
+ENV DB_USER skyscape
+ENV DB_PASS skyscape!!
+ENV JWT_SECRET jwt_secret_key!!@@
 ENV UPLOAD_PATH /skyscape/file
 ENV PORT 8080
 EXPOSE ${PORT}
