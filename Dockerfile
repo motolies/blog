@@ -1,5 +1,5 @@
 ### STAGE 1: Build ###
-FROM docker.hvy.kr/maven:3-openjdk-17 AS builder
+FROM maven:3-openjdk-17 AS builder
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
@@ -35,6 +35,13 @@ ARG JAR_FILE=target/*.jar
 COPY --from=builder --chown=boot:spring /usr/src/app/${JAR_FILE} ./app.jar
 
 #USER boot
+
+# BUILD ARGUMENTS
+ARG VERSION
+ENV VERSION $VERSION
+ARG BUILD_TIMESTAMP
+ENV BUILD_TIMESTAMP $BUILD_TIMESTAMP
+
 
 ENV DB_URL mariadb:3306
 ENV DB_USER skyscape

@@ -30,6 +30,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Get Variables
+        id: vars
+        run: |
+          COMMIT_HASH=$(git log -1 --pretty=%h)
+          echo "COMMIT_HASH=COMMIT_HASH" >> $GITHUB_ENV
+          BUILD_TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          echo "BUILD_TIMESTAMP=BUILD_TIMESTAMP" >> $GITHUB_ENV
+      -
         name: Buildx and Push
         uses: docker/build-push-action@v3
         with:
@@ -37,10 +45,12 @@ jobs:
           file: Dockerfile
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ env.VER_FULL }}
-            ${{ env.IMAGE_NAME }}:${{ env.VER_MINOR }}
-            ${{ env.IMAGE_NAME }}:${{ env.VER_MAJOR }}
+            ${{ env.IMAGE_NAME }}:${{ env.COMMIT_HASH }}
+            ${{ env.IMAGE_NAME }}:${{ env.BUILD_TIMESTAMP }}
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ env.COMMIT_HASH }}
+            BUILD_TIMESTAMP=${{ env.BUILD_TIMESTAMP }}
           push: true
       -
         name: Update Dockerhub description
