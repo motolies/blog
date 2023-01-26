@@ -7,7 +7,8 @@ on:
 
 env:
   DOCKERHUB_USER: knw1234
-  IMAGE_NAME: knw1234/blog-back
+  DOCKER_IMAGE_NAME: knw1234/blog-back
+  GHCR_IMAGE_NAME: motolies/blog-back
 
 jobs:
   main:
@@ -51,12 +52,12 @@ jobs:
           context: .
           file: Dockerfile
           tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ env.COMMIT_HASH }}
-            ${{ env.IMAGE_NAME }}:${{ env.BUILD_TIMESTAMP }}
-            ghcr.io/${{ env.IMAGE_NAME }}:latest
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.COMMIT_HASH }}
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ env.BUILD_TIMESTAMP }}
+            ${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ env.DOCKER_IMAGE_NAME }}:${{ env.COMMIT_HASH }}
+            ${{ env.DOCKER_IMAGE_NAME }}:${{ env.BUILD_TIMESTAMP }}
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:latest
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.COMMIT_HASH }}
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.BUILD_TIMESTAMP }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             VERSION=${{ env.COMMIT_HASH }}
