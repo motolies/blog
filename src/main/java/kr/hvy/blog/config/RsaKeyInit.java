@@ -7,18 +7,37 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Configuration
 public class RsaKeyInit {
     private final RsaHashRepository rsaHashRepository;
 
-    // TODO : init 시에 100개를 만드니까 너무 오래 걸리는 것 같다.
+    private final Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     @PostConstruct
     public void RandomKeyInit() throws NoSuchAlgorithmException {
-        for (int i = 0; i < 100; i++){
-            rsaHashRepository.save(RSAEncryptHelper.makeRsaHash());
-        }
+        final List<CompletableFuture> futures = IntStream.rangeClosed(1, 100)
+                .boxed()
+                .map(i -> CompletableFuture.supplyAsync(() -> {
+                            try {
+                                rsaHashRepository.save(RSAEncryptHelper.makeRsaHash());
+                            } catch (NoSuchAlgorithmException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }, executor)
+                )
+                .collect(Collectors.toList());
+
+        futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
     }
 }

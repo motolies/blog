@@ -19,9 +19,14 @@ public class RSAEncryptHelper {
 
     private static final String algorithm = "RSA";
 
+
     public static RsaHash makeRsaHash() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
-        keyPairGenerator.initialize(2048);
+        /* 1024비트의 공개키와 개인키를 생성
+         * 개인 블로그니까 1024비트로 충분하다고 생각했음
+         * 공개 서비스인 경우 2048비트로 해야함
+         */
+        keyPairGenerator.initialize(1024);
         KeyPair keyPair = keyPairGenerator.genKeyPair();
 
         return RsaHash.builder()
@@ -29,22 +34,6 @@ public class RSAEncryptHelper {
                 .publicKey(Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()))
                 .build();
 
-    }
-
-    public static Map<String, Object> makeKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
-        keyPairGenerator.initialize(2048);
-        KeyPair keyPair = keyPairGenerator.genKeyPair();
-
-        String tmpPublicKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()); // 공개키
-        String tmpPrivateKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()); // 개인키
-
-        Map<String, Object> pair = new HashMap<String, Object>();
-        pair.put("privateKeyString", tmpPrivateKey);
-        pair.put("publicKeyString", tmpPublicKey);
-        pair.put("privateKey", keyPair.getPrivate().getEncoded());
-        pair.put("publicKey", keyPair.getPublic().getEncoded());
-        return pair;
     }
 
     public static byte[] getKeyBytes(String key) {
