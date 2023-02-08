@@ -1,5 +1,6 @@
 package kr.hvy.blog.security;
 
+import kr.hvy.blog.entity.redis.RsaHash;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.BadPaddingException;
@@ -17,6 +18,18 @@ import java.util.Map;
 public class RSAEncryptHelper {
 
     private static final String algorithm = "RSA";
+
+    public static RsaHash makeRsaHash() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
+        keyPairGenerator.initialize(2048);
+        KeyPair keyPair = keyPairGenerator.genKeyPair();
+
+        return RsaHash.builder()
+                .privateKey(Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()))
+                .publicKey(Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()))
+                .build();
+
+    }
 
     public static Map<String, Object> makeKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);

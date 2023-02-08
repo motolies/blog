@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.RsaMap;
+import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.model.response.MyProfileDto;
+import kr.hvy.blog.repository.RsaHashRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.JwtUser;
 import kr.hvy.blog.security.RSAEncryptHelper;
@@ -49,6 +51,8 @@ public class AuthController {
 
     private final RsaMapService rsaMapService;
 
+    private final RsaHashRepository rsaHashRepository;
+
     private final UserService userService;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -81,6 +85,12 @@ public class AuthController {
         map.setPrivateKey(privateKey);
         rsaMapService.save(map);
         rsaMapService.deleteByUpdateDate();
+
+        RsaHash hash = RsaHash.builder()
+                .privateKey((String) pair.get("privateKeyString"))
+                .publicKey((String) pair.get("publicKeyString"))
+                .build();
+        rsaHashRepository.save(hash);
 
         HashMap<String, Object> a = new HashMap<String, Object>();
         a.put("rsaKey", pair.get("publicKeyString"));
