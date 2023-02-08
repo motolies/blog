@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hvy.blog.entity.RsaMap;
 import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.model.response.MyProfileDto;
@@ -13,6 +12,7 @@ import kr.hvy.blog.repository.RsaHashRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.JwtUser;
 import kr.hvy.blog.security.RSAEncryptHelper;
+import kr.hvy.blog.service.RsaHashService;
 import kr.hvy.blog.service.RsaMapService;
 import kr.hvy.blog.service.UserService;
 import kr.hvy.blog.util.ByteUtil;
@@ -37,7 +37,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,9 +48,8 @@ public class AuthController {
     @Value("${jwt.header.name}")
     private String tokenHeader;
 
-    private final RsaMapService rsaMapService;
 
-    private final RsaHashRepository rsaHashRepository;
+    private final RsaHashService rsaHashService;
 
     private final UserService userService;
 
@@ -75,25 +73,11 @@ public class AuthController {
     @Operation(summary = "로그인 패스워드 암호화를 위한 공개키 조회")
     @RequestMapping(value = "/shake", method = RequestMethod.POST)
     public ResponseEntity<?> createRsaKeyToken() throws Exception {
-        //rsa key 삽입
-        Map<String, Object> pair = RSAEncryptHelper.makeKey();
-        byte[] publicKey = (byte[]) pair.get("publicKey");
-        byte[] privateKey = (byte[]) pair.get("privateKey");
-
-        RsaMap map = new RsaMap();
-        map.setPublicKey(publicKey);
-        map.setPrivateKey(privateKey);
-        rsaMapService.save(map);
-        rsaMapService.deleteByUpdateDate();
-
-        RsaHash hash = RsaHash.builder()
-                .privateKey((String) pair.get("privateKeyString"))
-                .publicKey((String) pair.get("publicKeyString"))
-                .build();
-        rsaHashRepository.save(hash);
-
+//        RsaHash hash = RSAEncryptHelper.makeRsaHash();
+//        rsaHashService.save(hash);
+        RsaHash hash = rsaHashService.random();
         HashMap<String, Object> a = new HashMap<String, Object>();
-        a.put("rsaKey", pair.get("publicKeyString"));
+        a.put("rsaKey", hash.getPublicKey());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

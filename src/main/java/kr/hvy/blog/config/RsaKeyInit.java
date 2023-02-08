@@ -1,7 +1,7 @@
 package kr.hvy.blog.config;
 
-import kr.hvy.blog.repository.RsaHashRepository;
 import kr.hvy.blog.security.RSAEncryptHelper;
+import kr.hvy.blog.service.RsaHashService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Configuration
 public class RsaKeyInit {
-    private final RsaHashRepository rsaHashRepository;
+    private final RsaHashService rsaHashService;
 
     private final Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -27,7 +27,7 @@ public class RsaKeyInit {
                 .boxed()
                 .map(i -> CompletableFuture.supplyAsync(() -> {
                             try {
-                                rsaHashRepository.save(RSAEncryptHelper.makeRsaHash());
+                                rsaHashService.save(RSAEncryptHelper.makeRsaHash());
                             } catch (NoSuchAlgorithmException e) {
                                 e.printStackTrace();
                             }

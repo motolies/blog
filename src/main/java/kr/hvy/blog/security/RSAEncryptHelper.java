@@ -1,6 +1,7 @@
 package kr.hvy.blog.security;
 
 import kr.hvy.blog.entity.redis.RsaHash;
+import kr.hvy.blog.util.Base64WebSafeUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.BadPaddingException;
@@ -11,8 +12,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class RSAEncryptHelper {
