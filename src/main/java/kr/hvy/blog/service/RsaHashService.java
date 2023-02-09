@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -29,8 +30,8 @@ public class RsaHashService {
         rsaHashRepository.save(hash);
     }
 
-    public RsaHash findByPublicKey(String publicKey) {
-        return rsaHashRepository.findById(publicKey).orElse(null);
+    public Optional<RsaHash> findByPublicKey(String publicKey) {
+        return rsaHashRepository.findById(publicKey);
     }
 
 
