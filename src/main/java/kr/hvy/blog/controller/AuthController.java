@@ -8,12 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.model.response.MyProfileDto;
-import kr.hvy.blog.repository.RsaHashRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.JwtUser;
-import kr.hvy.blog.security.RSAEncryptHelper;
 import kr.hvy.blog.service.RsaHashService;
-import kr.hvy.blog.service.RsaMapService;
 import kr.hvy.blog.service.UserService;
 import kr.hvy.blog.util.ByteUtil;
 import kr.hvy.blog.util.CookieProvider;
@@ -72,9 +69,7 @@ public class AuthController {
 
     @Operation(summary = "로그인 패스워드 암호화를 위한 공개키 조회")
     @RequestMapping(value = "/shake", method = RequestMethod.POST)
-    public ResponseEntity<?> createRsaKeyToken() throws Exception {
-//        RsaHash hash = RSAEncryptHelper.makeRsaHash();
-//        rsaHashService.save(hash);
+    public ResponseEntity<?> createRsaKeyToken() {
         RsaHash hash = rsaHashService.random();
         HashMap<String, Object> a = new HashMap<String, Object>();
         a.put("rsaKey", hash.getPublicKey());
