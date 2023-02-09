@@ -78,7 +78,7 @@ jwt:
   header:
     name: Authorization
     prefix: Bearer
-  secret: ${JWT_SECRET:jwt_secret_key!!@@}
+  secret: ${JWT_SECRET:jwt_secret_key!!@@longlongKey1234}
   expiration: 31449600
   refresh:
     expiration: 31449600
