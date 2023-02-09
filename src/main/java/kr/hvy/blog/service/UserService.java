@@ -1,12 +1,10 @@
 package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.AuthorityName;
-import kr.hvy.blog.entity.RsaMap;
 import kr.hvy.blog.entity.User;
 import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
 import kr.hvy.blog.model.response.MyProfileDto;
-import kr.hvy.blog.repository.RsaMapRepository;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.RSAEncryptHelper;
@@ -38,7 +36,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final RsaMapRepository rsaMapRepository;
     private final RsaHashService rsaHashService;
     private final UserRepository userRepository;
 
@@ -57,7 +54,7 @@ public class UserService {
         }
 
         RsaHash hash = rsaHashService.findByPublicKey(loginDto.getRsaKey())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 키입니다."));;
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 키입니다."));
 
         String passwd = RSAEncryptHelper.getDecryptMessage(loginDto.getPassword(), hash.getPrivateKeyBytes());
 
