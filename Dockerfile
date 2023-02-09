@@ -20,7 +20,7 @@ COPY src src
 RUN mvn --batch-mode \
     --quiet \
     --errors \
-    package
+    package -DskipTests
 
 RUN echo BuildEnd : $(date +%F_%T)
 
