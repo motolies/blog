@@ -94,7 +94,8 @@ public class Content implements Serializable {
 
     @PreUpdate
     protected void onUpdate() {
-        updateDate = TimeUtil.getUtcTimestamp();
+        // 본문과 제목이 변경될 때만 updateDate를 변경한다.
+        // updateDate = TimeUtil.getUtcTimestamp();
         updateNormalBody();
     }
 
