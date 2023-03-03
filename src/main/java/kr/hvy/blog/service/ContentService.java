@@ -95,6 +95,11 @@ public class ContentService {
 
     @Transactional
     public Content update(Content content, Content newContent) {
+        // 본문 또는 제목이 변경되었을 경우만 updateDate를 변경한다.
+        if (!(content.getSubject().equals(newContent.getSubject()) && content.getBody().equals(newContent.getBody()))) {
+            content.setUpdateDate(TimeUtil.getUtcTimestamp());
+        }
+
         content.setSubject(newContent.getSubject());
         content.setBody(newContent.getBody());
 
@@ -103,12 +108,6 @@ public class ContentService {
 
         content.setCategoryId(newContent.getCategoryId());
         content.setPublic(newContent.isPublic());
-
-        // 본문 또는 제목이 변경되었을 경우만 updateDate를 변경한다.
-        if (!(content.getSubject().equals(newContent.getSubject()) && content.getBody().equals(newContent.getBody()))) {
-            content.setUpdateDate(TimeUtil.getUtcTimestamp());
-        }
-
 
         // 태그도 바로바로 달도록 하면 별도로 여기서 관리하지 않아도 되겠다.
 //        // 기존꺼 삭제
