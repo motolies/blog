@@ -115,5 +115,10 @@
            AND BODY = ''
     </select>
 
+    <select id="findByPublicContent" resultType="Integer">
+        SELECT ID
+          FROM CONTENT
+         WHERE ISPUBLIC = 1
+    </select>
 
 </mapper>

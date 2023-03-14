@@ -360,5 +360,9 @@ public class ContentService {
         return pager;
     }
 
+    public List<Integer> findByPublicContent(){
+        return contentMapper.findByPublicContent();
+    }
+
 
 }

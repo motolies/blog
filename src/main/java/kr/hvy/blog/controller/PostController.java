@@ -71,6 +71,16 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findPrevNextById(contentId));
     }
 
+    @Operation(summary = "공개 포스트의 Id 목록 조회", description = "sitemap.xml을 만들기 위한 공개 포스트의 Id 목록을 조회한다.")
+    @ApiResponse(responseCode = "200",
+            content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
+    )
+    @GetMapping(value = {"/public-content"})
+    public ResponseEntity getPublicContentId()
+    {
+        return ResponseEntity.status(HttpStatus.OK).body(contentService.findByPublicContent());
+    }
+
     @Operation(summary = "검색상세")
     @Parameter(name = "query", description = "BASE64로 인코딩한 파라미터(json object)", required = true)
     @ApiResponse(responseCode = "200",

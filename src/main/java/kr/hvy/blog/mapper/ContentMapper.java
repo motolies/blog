@@ -17,4 +17,6 @@ public interface ContentMapper {
 
     List<Integer> findByTempContent();
 
+    List<Integer> findByPublicContent();
+
 }
