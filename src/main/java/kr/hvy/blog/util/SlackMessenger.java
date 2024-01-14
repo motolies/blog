@@ -18,7 +18,7 @@ public class SlackMessenger {
 
     public static void send(String message, Exception e) {
         try {
-            String msg = "<!here> \n" + message + "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+            String msg = "<!channel> \n" + message + "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(SlackChannelType.HVY_ERROR.getChannel())
                     .text(message + "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()))
@@ -33,7 +33,7 @@ public class SlackMessenger {
 
     public static void send(Exception e) {
         try {
-            String msg = "<!here> \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+            String msg = "<!channel> \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
 
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(SlackChannelType.HVY_ERROR.getChannel())
@@ -48,10 +48,10 @@ public class SlackMessenger {
     }
 
 
-    public static void send(SlackChannelType channel, String message, boolean isHere) {
+    public static void send(SlackChannelType channel, String message, boolean isChannel) {
         try {
-            if (isHere) {
-                message = "<!here> \n" + message;
+            if (isChannel) {
+                message = "<!channel> \n" + message;
             }
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(channel.getChannel())
@@ -69,8 +69,8 @@ public class SlackMessenger {
         send(channel, message, false);
     }
 
-    public static void send(String message, boolean isHere) {
-        send(SlackChannelType.HVY_NOTIFY, message, true);
+    public static void send(String message, boolean isChannel) {
+        send(SlackChannelType.HVY_NOTIFY, message, isChannel);
     }
 
     public static void send(String message) {
