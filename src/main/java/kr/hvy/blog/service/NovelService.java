@@ -1,6 +1,10 @@
 package kr.hvy.blog.service;
 
+import kr.hvy.blog.entity.Novel;
+import kr.hvy.blog.mapper.NovelMapper;
 import kr.hvy.blog.model.LinkInfo;
+import kr.hvy.blog.model.novel.NovelDownRequest;
+import kr.hvy.blog.repository.NovelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -26,31 +30,51 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NovelDownloadService {
+public class NovelService {
 
     private final TaskExecutor taskExecutor;
 
+    private final NovelMapper novelMapper;
+    private final NovelRepository novelRepository;
+
     @Async
-    public void download() throws InterruptedException {
+    public void download(NovelDownRequest request) throws InterruptedException {
 
-        List<LinkInfo> novelList = getNovelList("https://booktoki321.com/novel/222");
+        List<Integer> seqList = novelMapper.findSeqByTitle(request.getTitle());
 
-        for(LinkInfo linkInfo : novelList) {
+        List<LinkInfo> novelList = getNovelList(request.getListUrl());
+
+        List<LinkInfo> novelRequireList = novelList.stream()
+                .filter(linkInfo -> !seqList.contains(linkInfo.getSeq()))
+                .sorted().toList();
+
+        for (LinkInfo linkInfo : novelRequireList) {
             String content = downloadNovel(linkInfo.getLink(), "novel_content");
-            System.out.println(content);
+
+            Novel novel = Novel.builder()
+                    .title(request.getTitle())
+                    .seq(linkInfo.getSeq())
+                    .content(content)
+                    .build();
+
+            novelRepository.save(novel);
+
+            log.info("{}, {}/{} 다운로드 완료", request.getTitle(), linkInfo.getSeq(), novelRequireList.size());
             Thread.sleep(1000);
         }
+        log.info("{} 다운로드 완료", request.getTitle());
 
     }
-
 
     /**
      * 일반적인 사이트에서는 너무 많은 호출로 인해서 블럭당함
      */
     @Deprecated
     @Async
-    public void completableFutureDownload() {
-        List<LinkInfo> novelList = getNovelList("https://booktoki321.com/novel/222");
+    public void completableFutureDownload(NovelDownRequest request) {
+
+        List<LinkInfo> novelList = getNovelList(request.getListUrl());
+
         // CompletableFuture로 감싸서 비동기로 다운로드하고 결과를 얻기
         List<CompletableFuture<String>> downloadFutures = novelList.stream()
                 .map(linkInfo -> CompletableFuture.supplyAsync(() ->
@@ -85,7 +109,7 @@ public class NovelDownloadService {
             // LiInfo 클래스에 저장
             LinkInfo info = LinkInfo.builder()
                     .link(link)
-                    .order(Integer.parseInt(index))
+                    .seq(Integer.parseInt(index))
                     .build();
 
             links.add(info);

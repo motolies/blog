@@ -1,10 +1,12 @@
 package kr.hvy.blog.controller;
 
-import kr.hvy.blog.service.NovelDownloadService;
+import kr.hvy.blog.model.novel.NovelDownRequest;
+import kr.hvy.blog.service.NovelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/novel")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
-public class NovelDownloadController {
+public class NovelController {
 
-    private final NovelDownloadService novelDownloadService;
+    private final NovelService novelService;
 
-    @GetMapping("/test")
-    public ResponseEntity test() throws InterruptedException {
-        novelDownloadService.download();
+    @PostMapping("/down")
+    public ResponseEntity downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException {
+        novelService.download(request);
         return ResponseEntity.ok("ok");
     }
 

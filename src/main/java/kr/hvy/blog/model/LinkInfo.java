@@ -13,10 +13,10 @@ public class LinkInfo implements Serializable,  Comparable<LinkInfo>  {
 
     private String link;
     private String title;
-    private int order;
+    private int seq;
 
     @Override
     public int compareTo(LinkInfo other) {
-        return Integer.compare(this.order, other.order);
+        return Integer.compare(this.seq, other.seq);
     }
 }
