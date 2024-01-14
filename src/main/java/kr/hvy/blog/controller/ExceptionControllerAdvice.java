@@ -1,5 +1,6 @@
 package kr.hvy.blog.controller;
 
+import kr.hvy.blog.util.SlackMessenger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
+
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

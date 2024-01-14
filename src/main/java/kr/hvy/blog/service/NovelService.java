@@ -5,6 +5,7 @@ import kr.hvy.blog.mapper.NovelMapper;
 import kr.hvy.blog.model.LinkInfo;
 import kr.hvy.blog.model.novel.NovelDownRequest;
 import kr.hvy.blog.repository.NovelRepository;
+import kr.hvy.blog.util.SlackMessenger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -62,7 +63,11 @@ public class NovelService {
             log.info("{}, {}/{} 다운로드 완료", request.getTitle(), linkInfo.getSeq(), novelRequireList.size());
             Thread.sleep(1000);
         }
-        log.info("{} 다운로드 완료", request.getTitle());
+
+        String message = String.format("%s 다운로드 완료", request.getTitle());
+
+        log.info(message);
+        SlackMessenger.send(message);
 
     }
 
