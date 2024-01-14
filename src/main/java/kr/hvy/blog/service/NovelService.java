@@ -16,9 +16,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -192,6 +190,27 @@ public class NovelService {
         }
 
         return htmlContent.toString();
+    }
+
+    public InputStream getTxtFile(String title) {
+        // title로 검색해서 txt 파일을 만들어서 내려준다
+        List<Novel> novelList = novelRepository.findByTitleOrderBySeq(title);
+
+        // Novel의 Content를 IO stream 으로 만들어서 리턴한다
+        StringBuilder contentBuilder = new StringBuilder();
+        for (Novel novel : novelList) {
+            contentBuilder.append(novel.getContent()).append("\n").append("\n").append("\n");
+        }
+
+        // StringBuilder를 ByteArrayInputStream으로 변환
+        try {
+            return new ByteArrayInputStream(contentBuilder.toString().getBytes("UTF-8"));
+        } catch (IOException e) {
+            // 예외 처리 로직을 추가하세요.
+            log.error("getTxtFile Exception title: {}", title, e);
+            return null;
+        }
+
     }
 
 
