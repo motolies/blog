@@ -18,9 +18,10 @@ public class SlackMessenger {
 
     public static void send(String message, Exception e) {
         try {
+            String msg = "<!here> \n" + message + "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(SlackChannelType.HVY_ERROR.getChannel())
-                    .text(message + "\n" + e.getMessage() +"\n" + Arrays.toString(e.getStackTrace()))
+                    .text(message + "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()))
                     .build();
 
             METHODS_CLIENT.chatPostMessage(request);
@@ -32,9 +33,11 @@ public class SlackMessenger {
 
     public static void send(Exception e) {
         try {
+            String msg = "<!here> \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(SlackChannelType.HVY_ERROR.getChannel())
-                    .text(e.getMessage() +"\n" + Arrays.toString(e.getStackTrace()))
+                    .text(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()))
                     .build();
 
             METHODS_CLIENT.chatPostMessage(request);
@@ -45,10 +48,11 @@ public class SlackMessenger {
     }
 
 
-    public static void send(SlackChannelType channel, String message) {
-
+    public static void send(SlackChannelType channel, String message, boolean isHere) {
         try {
-
+            if (isHere) {
+                message = "<!here> \n" + message;
+            }
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(channel.getChannel())
                     .text(message)
@@ -61,20 +65,16 @@ public class SlackMessenger {
         }
     }
 
+    public static void send(SlackChannelType channel, String message) {
+        send(channel, message, false);
+    }
+
+    public static void send(String message, boolean isHere) {
+        send(SlackChannelType.HVY_NOTIFY, message, true);
+    }
+
     public static void send(String message) {
-
-        try {
-
-            ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-                    .channel(SlackChannelType.HVY_NOTIFY.getChannel())
-                    .text(message)
-                    .build();
-
-            METHODS_CLIENT.chatPostMessage(request);
-
-        } catch (SlackApiException | IOException e) {
-            log.error(e.getMessage());
-        }
+        send(SlackChannelType.HVY_NOTIFY, message);
     }
 
 

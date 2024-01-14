@@ -21,7 +21,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 /**
  * The type Novel download service.
@@ -36,10 +38,23 @@ public class NovelService {
     private final NovelMapper novelMapper;
     private final NovelRepository novelRepository;
 
-    @Async
-    public void download(NovelDownRequest request)  {
+    private void saveAndUpdate(Novel novel) {
+        // exception 발생시에도 저장되도록 @Transactional 제거
+        Optional<Novel> findNovel = novelRepository.findByTitleAndSeq(novel.getTitle(), novel.getSeq());
+        if (findNovel.isPresent()) {
+            Novel find = findNovel.get();
+            find.setContent(novel.getContent());
+            novelRepository.save(find);
+        } else {
+            novelRepository.save(novel);
+        }
+    }
 
-        try{
+
+    @Async
+    public void download(NovelDownRequest request) {
+
+        try {
             List<Integer> seqList = novelMapper.findSeqByTitle(request.getTitle());
 
             List<LinkInfo> novelList = getNovelList(request.getListUrl());
@@ -48,26 +63,41 @@ public class NovelService {
                     .filter(linkInfo -> !seqList.contains(linkInfo.getSeq()))
                     .sorted().toList();
 
-            for (LinkInfo linkInfo : novelRequireList) {
-                String content = downloadNovel(linkInfo.getLink(), "novel_content");
+            IntStream.range(0, novelRequireList.size())
+                    .forEach(index -> {
+                        try {
+                            LinkInfo linkInfo = novelRequireList.get(index);
+                            String content = downloadNovel(linkInfo.getLink(), "novel_content");
 
-                Novel novel = Novel.builder()
-                        .title(request.getTitle())
-                        .seq(linkInfo.getSeq())
-                        .content(content)
-                        .build();
+                            Novel novel = Novel.builder()
+                                    .title(request.getTitle())
+                                    .seq(linkInfo.getSeq())
+                                    .content(content)
+                                    .build();
 
-                novelRepository.save(novel);
+                            saveAndUpdate(novel);
 
-                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), linkInfo.getSeq(), novelRequireList.size());
-                Thread.sleep(1000);
-            }
+                            // index가 10의 배수인 경우에만 노티피케이션 보내기
+                            if ((index + 1) % 10 == 0) {
+                                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), index + 1, novelRequireList.size());
+                                SlackMessenger.send(String.format("%s 다운로드 중 %d/%d 완료", request.getTitle(), index + 1, novelRequireList.size()));
+                            } else {
+                                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), index + 1, novelRequireList.size());
+                            }
+
+                            Thread.sleep(1000);
+                        } catch (Exception e) {
+                            log.error("download Exception title: {}", request.getTitle(), e);
+                            SlackMessenger.send(e);
+                        }
+                    });
+
 
             String message = String.format("%s 다운로드 완료", request.getTitle());
 
             log.info(message);
-            SlackMessenger.send(message);
-        }catch (Exception e){
+            SlackMessenger.send(message, true);
+        } catch (Exception e) {
             log.error("download Exception title: {}", request.getTitle(), e);
             SlackMessenger.send(e);
         }

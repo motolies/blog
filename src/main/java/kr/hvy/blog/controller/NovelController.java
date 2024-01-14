@@ -30,7 +30,7 @@ public class NovelController {
     @PostMapping("/down")
     public ResponseEntity downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException, IOException {
         novelService.download(request);
-        SlackMessenger.send(String.format("%s 다운로드 접수함", request.getTitle()));
+        SlackMessenger.send(String.format("%s 다운로드 접수함", request.getTitle()), true);
         return ResponseEntity.ok("ok");
     }
 

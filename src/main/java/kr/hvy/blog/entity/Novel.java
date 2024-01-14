@@ -26,6 +26,7 @@ public class Novel {
     @NotNull
     private int seq;
 
+    @Setter
     @NotNull
     @Column(name = "Content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
@@ -35,7 +36,6 @@ public class Novel {
 
     @Column(name = "UpdateDate", nullable = false)
     private Timestamp updateDate;
-
 
     @PrePersist
     protected void onCreate() {
