@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,12 +78,13 @@ public class NovelService {
 
                             saveAndUpdate(novel);
 
+                            String message = String.format("%s 다운로드 중 %d/%d 완료", request.getTitle(), index + 1, novelRequireList.size());
                             // index가 10의 배수인 경우에만 노티피케이션 보내기
                             if ((index + 1) % 10 == 0) {
-                                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), index + 1, novelRequireList.size());
-                                SlackMessenger.send(String.format("%s 다운로드 중 %d/%d 완료", request.getTitle(), index + 1, novelRequireList.size()));
+                                log.info(message);
+                                SlackMessenger.send(message);
                             } else {
-                                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), index + 1, novelRequireList.size());
+                                log.info(message);
                             }
 
                             Thread.sleep(1000);
@@ -244,13 +246,7 @@ public class NovelService {
         }
 
         // StringBuilder를 ByteArrayInputStream으로 변환
-        try {
-            return new ByteArrayInputStream(contentBuilder.toString().getBytes("UTF-8"));
-        } catch (IOException e) {
-            // 예외 처리 로직을 추가하세요.
-            log.error("getTxtFile Exception title: {}", title, e);
-            return null;
-        }
+        return new ByteArrayInputStream(contentBuilder.toString().getBytes(StandardCharsets.UTF_8));
 
     }
 
