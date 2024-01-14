@@ -17,9 +17,7 @@ public class SlackMessenger {
     private static final MethodsClient METHODS_CLIENT = Slack.getInstance().methods(SLACK_TOKEN);
 
     public static void send(String message, Exception e) {
-
         try {
-
             ChatPostMessageRequest request = ChatPostMessageRequest.builder()
                     .channel(SlackChannelType.HVY_ERROR.getChannel())
                     .text(message + "\n" + e.getMessage() +"\n" + Arrays.toString(e.getStackTrace()))
@@ -31,6 +29,21 @@ public class SlackMessenger {
             log.error(ex.getMessage());
         }
     }
+
+    public static void send(Exception e) {
+        try {
+            ChatPostMessageRequest request = ChatPostMessageRequest.builder()
+                    .channel(SlackChannelType.HVY_ERROR.getChannel())
+                    .text(e.getMessage() +"\n" + Arrays.toString(e.getStackTrace()))
+                    .build();
+
+            METHODS_CLIENT.chatPostMessage(request);
+
+        } catch (SlackApiException | IOException ex) {
+            log.error(ex.getMessage());
+        }
+    }
+
 
     public static void send(SlackChannelType channel, String message) {
 

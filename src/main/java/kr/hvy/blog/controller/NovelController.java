@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
@@ -27,7 +28,7 @@ public class NovelController {
     private final NovelService novelService;
 
     @PostMapping("/down")
-    public ResponseEntity downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException {
+    public ResponseEntity downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException, IOException {
         novelService.download(request);
         SlackMessenger.send(String.format("%s 다운로드 접수함", request.getTitle()));
         return ResponseEntity.ok("ok");

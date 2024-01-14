@@ -37,36 +37,40 @@ public class NovelService {
     private final NovelRepository novelRepository;
 
     @Async
-    public void download(NovelDownRequest request) throws InterruptedException {
+    public void download(NovelDownRequest request)  {
 
-        List<Integer> seqList = novelMapper.findSeqByTitle(request.getTitle());
+        try{
+            List<Integer> seqList = novelMapper.findSeqByTitle(request.getTitle());
 
-        List<LinkInfo> novelList = getNovelList(request.getListUrl());
+            List<LinkInfo> novelList = getNovelList(request.getListUrl());
 
-        List<LinkInfo> novelRequireList = novelList.stream()
-                .filter(linkInfo -> !seqList.contains(linkInfo.getSeq()))
-                .sorted().toList();
+            List<LinkInfo> novelRequireList = novelList.stream()
+                    .filter(linkInfo -> !seqList.contains(linkInfo.getSeq()))
+                    .sorted().toList();
 
-        for (LinkInfo linkInfo : novelRequireList) {
-            String content = downloadNovel(linkInfo.getLink(), "novel_content");
+            for (LinkInfo linkInfo : novelRequireList) {
+                String content = downloadNovel(linkInfo.getLink(), "novel_content");
 
-            Novel novel = Novel.builder()
-                    .title(request.getTitle())
-                    .seq(linkInfo.getSeq())
-                    .content(content)
-                    .build();
+                Novel novel = Novel.builder()
+                        .title(request.getTitle())
+                        .seq(linkInfo.getSeq())
+                        .content(content)
+                        .build();
 
-            novelRepository.save(novel);
+                novelRepository.save(novel);
 
-            log.info("{}, {}/{} 다운로드 완료", request.getTitle(), linkInfo.getSeq(), novelRequireList.size());
-            Thread.sleep(1000);
+                log.info("{}, {}/{} 다운로드 완료", request.getTitle(), linkInfo.getSeq(), novelRequireList.size());
+                Thread.sleep(1000);
+            }
+
+            String message = String.format("%s 다운로드 완료", request.getTitle());
+
+            log.info(message);
+            SlackMessenger.send(message);
+        }catch (Exception e){
+            log.error("download Exception title: {}", request.getTitle(), e);
+            SlackMessenger.send(e);
         }
-
-        String message = String.format("%s 다운로드 완료", request.getTitle());
-
-        log.info(message);
-        SlackMessenger.send(message);
-
     }
 
     /**
@@ -74,14 +78,20 @@ public class NovelService {
      */
     @Deprecated
     @Async
-    public void completableFutureDownload(NovelDownRequest request) {
+    public void completableFutureDownload(NovelDownRequest request) throws IOException {
 
         List<LinkInfo> novelList = getNovelList(request.getListUrl());
 
         // CompletableFuture로 감싸서 비동기로 다운로드하고 결과를 얻기
         List<CompletableFuture<String>> downloadFutures = novelList.stream()
                 .map(linkInfo -> CompletableFuture.supplyAsync(() ->
-                        downloadNovel(linkInfo.getLink(), "novel_content"), taskExecutor))
+                {
+                    try {
+                        return downloadNovel(linkInfo.getLink(), "novel_content");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, taskExecutor))
                 .toList();
 
         // CompletableFuture.allOf()를 사용하여 모든 작업이 완료될 때까지 대기
@@ -97,7 +107,7 @@ public class NovelService {
         contents.forEach(System.out::println);
     }
 
-    private List<LinkInfo> getNovelList(String urlPath) {
+    private List<LinkInfo> getNovelList(String urlPath) throws IOException {
         List<LinkInfo> links = new ArrayList<>();
 
         String listPage = getHtml(urlPath);
@@ -106,23 +116,23 @@ public class NovelService {
         Elements liElements = document.select("li.list-item");
 
         for (Element liElement : liElements) {
-            String index = liElement.attr("data-index");
+            String seq = liElement.select("div.wr-num").text(); // wr-num 클래스에서 텍스트를 가져옴
             String link = liElement.select("div.wr-subject a.item-subject").attr("href");
 
             // LiInfo 클래스에 저장
             LinkInfo info = LinkInfo.builder()
                     .link(link)
-                    .seq(Integer.parseInt(index))
+                    .seq(Integer.parseInt(seq))
                     .build();
 
             links.add(info);
-
         }
 
         return links.stream().sorted().toList();
     }
 
-    private String downloadNovel(String urlPath, String targetId) {
+
+    private String downloadNovel(String urlPath, String targetId) throws IOException {
         String contentPage = getHtml(urlPath);
         Document document = Jsoup.parse(contentPage);
 
@@ -148,7 +158,7 @@ public class NovelService {
 
     }
 
-    private String getHtml(String urlString) {
+    private String getHtml(String urlString) throws IOException {
         StringBuilder htmlContent = new StringBuilder();
         BufferedReader bufferedReader = null;
 
@@ -178,6 +188,7 @@ public class NovelService {
 
         } catch (IOException e) {
             log.error("getHtml Download Exception Url: {}", urlString, e);
+            throw e;
         } finally {
             // BufferedReader 닫기
             if (bufferedReader != null) {
