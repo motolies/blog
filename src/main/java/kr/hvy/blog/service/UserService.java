@@ -1,10 +1,11 @@
 package kr.hvy.blog.service;
 
+import kr.hvy.blog.entity.Authority;
 import kr.hvy.blog.entity.AuthorityName;
 import kr.hvy.blog.entity.User;
 import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
-import kr.hvy.blog.model.response.MyProfileDto;
+import kr.hvy.blog.model.response.MyProfileResponseDto;
 import kr.hvy.blog.repository.UserRepository;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.RSAEncryptHelper;
@@ -64,20 +65,16 @@ public class UserService {
         return jwtTokenProvider.createToken(user);
     }
 
-    public MyProfileDto getMyProfile(byte[] userId) {
+    public MyProfileResponseDto getMyProfile(byte[] userId) {
         User user = findById(userId);
 
-        List<AuthorityName> roles = user.getAuthority().stream().map(a -> {
-            return a.getName();
-        }).collect(Collectors.toList());
+        List<AuthorityName> roles = user.getAuthority().stream().map(Authority::getName).collect(Collectors.toList());
 
-        MyProfileDto profile = MyProfileDto.builder()
+        return MyProfileResponseDto.builder()
                 .LoginId(user.getUsername())
                 .UserName(user.getName())
                 .Role(roles)
                 .build();
-
-        return profile;
     }
 
 }

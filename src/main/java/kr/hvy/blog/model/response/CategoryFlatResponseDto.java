@@ -3,11 +3,13 @@ package kr.hvy.blog.model.response;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-public class CategoryDto implements Serializable {
+public class CategoryFlatResponseDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -4865232214529293019L;
 
     private String Id;

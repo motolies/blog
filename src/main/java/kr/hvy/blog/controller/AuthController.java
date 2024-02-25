@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.redis.RsaHash;
 import kr.hvy.blog.model.request.LoginDto;
-import kr.hvy.blog.model.response.MyProfileDto;
+import kr.hvy.blog.model.response.MyProfileResponseDto;
 import kr.hvy.blog.security.JwtTokenProvider;
 import kr.hvy.blog.security.JwtUser;
 import kr.hvy.blog.service.RsaHashService;
@@ -54,13 +54,13 @@ public class AuthController {
 
 
     @Operation(summary = "로그인한 사용자 조회")
-    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.MyProfileDto.class))})
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MyProfileResponseDto.class))})
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
     public ResponseEntity<?> getMeInfo(Authentication auth) {
 
         // 토큰에서 정보 빼서 넘겨준다
         byte[] userId = ((JwtUser) auth.getPrincipal()).getId();
-        MyProfileDto profile = userService.getMyProfile(userId);
+        MyProfileResponseDto profile = userService.getMyProfile(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -81,15 +81,15 @@ public class AuthController {
 
 
     @Operation(summary = "로그인")
-    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.model.response.MyProfileDto.class))})
+    @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MyProfileResponseDto.class))})
     @PostMapping(value = {"login"})
-    public ResponseEntity login(HttpServletRequest request, @RequestBody LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
+    public ResponseEntity<?> login(HttpServletRequest request, @RequestBody LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
 
         String token = userService.login(loginDto);
         ResponseCookie springCookie = CookieProvider.setSpringCookie(request, tokenHeader, token);
 
         String hexId = jwtTokenProvider.getUserHexId(token);
-        MyProfileDto profile = userService.getMyProfile(ByteUtil.hexToByteArray(hexId));
+        MyProfileResponseDto profile = userService.getMyProfile(ByteUtil.hexToByteArray(hexId));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -102,7 +102,7 @@ public class AuthController {
     @Operation(summary = "로그아웃")
     @ApiResponse(responseCode = "200")
     @GetMapping(value = {"logout"})
-    public ResponseEntity logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
         ResponseCookie springCookie = CookieProvider.removeSpringCookie(request, tokenHeader);
         return ResponseEntity
                 .status(HttpStatus.OK)

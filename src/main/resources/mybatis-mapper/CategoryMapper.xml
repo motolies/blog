@@ -4,10 +4,29 @@
 
 <mapper namespace="kr.hvy.blog.mapper.CategoryMapper">
 
-    <select id="findAllCategory" resultType="CategoryDto">
+    <select id="findAllCategory" resultType="CategoryFlatResponseDto">
         SELECT ID, NAME, `Order`, FULLNAME, PID
           FROM CATEGORY
          ORDER BY FULLNAME ASC
     </select>
 
+
+    <insert id="saveCategory" parameterType="CategorySaveDto" statementType="CALLABLE">
+        {call usp_category_save(
+                #{categorySaveDto.id, jdbcType=VARCHAR, mode=IN},
+                #{categorySaveDto.name, jdbcType=VARCHAR, mode=IN},
+                #{categorySaveDto.order, jdbcType=INTEGER, mode=IN},
+                #{categorySaveDto.fullName, jdbcType=VARCHAR, mode=IN},
+                #{categorySaveDto.fullPath, jdbcType=VARCHAR, mode=IN},
+                #{categorySaveDto.pId, jdbcType=VARCHAR, mode=IN}
+              )}
+    </insert>
+
+    <update id="updateFullName" statementType="CALLABLE">
+        {call usp_category_fullname_update()}
+    </update>
+
+    <delete id="deleteById" parameterType="string" statementType="CALLABLE">
+        {call usp_category_delete(#{categoryId, jdbcType=VARCHAR, mode=IN})}
+    </delete>
 </mapper>

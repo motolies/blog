@@ -2,10 +2,12 @@ package kr.hvy.blog.service;
 
 import kr.hvy.blog.entity.Category;
 import kr.hvy.blog.mapper.CategoryMapper;
-import kr.hvy.blog.model.response.CategoryDto;
+import kr.hvy.blog.model.request.CategorySaveDto;
+import kr.hvy.blog.model.response.CategoryFlatResponseDto;
 import kr.hvy.blog.repository.CategoryRepository;
 import kr.hvy.blog.util.MultipleResultSet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CategoryService {
@@ -28,7 +31,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
 
-    public List<CategoryDto> findAllCategory() {
+    public List<CategoryFlatResponseDto> findAllCategory() {
         return categoryMapper.findAllCategory();
     }
 
@@ -80,93 +83,16 @@ public class CategoryService {
         return categoryRepository.saveAndFlush(cat);
     }
 
+
     @Transactional
-    public void saveWithProc(Category cat) throws SQLException {
-
-        EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
-        Connection conn = null;
-
-        try {
-            conn = info.getDataSource().getConnection();
-            CallableStatement callableSt = conn.prepareCall("{call usp_category_save(?, ?, ?, ?, ?, ?)}");
-            callableSt.setString(1, cat.getId());
-            callableSt.setString(2, cat.getName());
-            callableSt.setInt(3, cat.getOrder());
-            callableSt.setString(4, cat.getFullName());
-            callableSt.setString(5, cat.getFullPath());
-            callableSt.setString(6, cat.getPId());
-
-            callableSt.execute();
-            callableSt.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        } finally {
-            try {
-                if (!conn.isClosed())
-                    conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+    public void saveWithProc(CategorySaveDto categorySaveDto) throws SQLException {
+        categoryMapper.saveCategory(categorySaveDto);
+        categoryMapper.updateFullName();
     }
+
 
     @Transactional
     public void deleteWithProc(String categoryId) throws SQLException {
-
-        EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
-        Connection conn = null;
-
-        try {
-            conn = info.getDataSource().getConnection();
-            CallableStatement callableSt = conn.prepareCall("{call usp_category_delete(?)}");
-            callableSt.setString(1, categoryId);
-            callableSt.execute();
-            callableSt.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        } finally {
-            try {
-                if (!conn.isClosed())
-                    conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
+        categoryMapper.deleteById(categoryId);
     }
-
-    @Transactional
-    public void updateFullName() throws SQLException {
-        EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
-        Connection conn = null;
-
-        try {
-            conn = info.getDataSource().getConnection();
-            CallableStatement callableSt = conn.prepareCall("{call usp_category_fullname_update()}");
-            callableSt.execute();
-            callableSt.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        } finally {
-            try {
-                if (!conn.isClosed())
-                    conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Transactional
-    public void deleteById(String id) {
-        categoryRepository.deleteById(id);
-    }
-
 }

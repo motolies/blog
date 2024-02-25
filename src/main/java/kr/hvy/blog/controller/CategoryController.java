@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hvy.blog.entity.Category;
-import kr.hvy.blog.model.response.CategoryDto;
+import kr.hvy.blog.model.request.CategorySaveDto;
+import kr.hvy.blog.model.response.CategoryResponseDto;
+import kr.hvy.blog.model.response.CategoryFlatResponseDto;
 import kr.hvy.blog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +32,8 @@ public class CategoryController {
     @Operation(summary = "전체 카테고리 조회(포스트에서 카테고리 표기시에 쓰임)")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @GetMapping("")
-    public ResponseEntity getCategory() {
-        List<CategoryDto> list = categoryService.findAllCategory();
+    public ResponseEntity<?> getCategory() {
+        List<CategoryFlatResponseDto> list = categoryService.findAllCategory();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(list);
@@ -42,26 +44,24 @@ public class CategoryController {
     @Operation(summary = "루트 카테고리 조회")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @GetMapping("/root")
-    public ResponseEntity getRootCategory() {
+    public ResponseEntity<?> getRootCategory() {
 
         Category category = categoryService.findRoot();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(category);
+                .body(CategoryResponseDto.fromEntity(category));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "카테고리 저장", description = "id, name, parent 가 최소 정보이다.")
     @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = kr.hvy.blog.entity.Category.class))})
     @PostMapping("")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category) throws SQLException {
-        category.cleanUp();
-        categoryService.saveWithProc(category);
-        categoryService.updateFullName();
+    public ResponseEntity<?> saveCategory(@RequestBody CategorySaveDto categorySaveDto) throws SQLException {
+        categoryService.saveWithProc(categorySaveDto);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(category);
+                .body(categorySaveDto);
 
     }
 
