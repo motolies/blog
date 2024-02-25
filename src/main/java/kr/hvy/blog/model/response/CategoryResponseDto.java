@@ -25,6 +25,7 @@ public class CategoryResponseDto {
     public static CategoryResponseDto fromEntity(Category category) {
         CategoryResponseDto dto = new CategoryResponseDto();
         dto.setId(category.getId());
+        dto.setPId(category.getPId());
         dto.setName(category.getName());
         dto.setFullPath(category.getFullPath());
         dto.setContentCount(category.getContentCount());
