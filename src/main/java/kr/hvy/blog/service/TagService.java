@@ -27,7 +27,8 @@ public class TagService {
         if (existingTag == null) {
             tagRepository.saveAndFlush(tag);
             em.detach(tag);
-            return tagRepository.findById(tag.getId()).orElse(null);
+            return tagRepository.findById(tag.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("태그가 존재하지 않습니다."));
         } else {
             return existingTag;
         }
@@ -55,7 +56,8 @@ public class TagService {
     }
 
     public Tag findById(int id) {
-        return tagRepository.findById(id).orElse(null);
+        return tagRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("태그가 존재하지 않습니다."));
+
     }
 
     public Tag findByName(String name) {

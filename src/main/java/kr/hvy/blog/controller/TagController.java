@@ -25,28 +25,28 @@ public class TagController {
     @Operation(summary = "모든 태그 조회")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @GetMapping("/all")
-    public ResponseEntity getAllTags() {
+    public ResponseEntity<?> getAllTags() {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAll());
     }
 
     @Operation(summary = "태그 검색")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @GetMapping("")
-    public ResponseEntity getTags(@RequestParam(defaultValue = "") String name) {
+    public ResponseEntity<?> getTags(@RequestParam(defaultValue = "") String name) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findByNameContainingOrderByName(name));
     }
 
     @Operation(summary = "태그 저장")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @PostMapping("")
-    public ResponseEntity saveTag(@RequestBody Tag tag) {
+    public ResponseEntity<?> saveTag(@RequestBody Tag tag) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.save(tag));
     }
 
     @Operation(summary = "태그 업데이트")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @PutMapping("/{tagId}")
-    public ResponseEntity updateTag(@PathVariable int tagId, @RequestBody Tag tag) {
+    public ResponseEntity<?> updateTag(@PathVariable int tagId, @RequestBody Tag tag) {
 
         throw new NotImplementedException("Not Implemented");
 
@@ -65,7 +65,7 @@ public class TagController {
     @Operation(summary = "태그 삭제")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Tag.class))})
     @DeleteMapping("/{tagId}")
-    public ResponseEntity deleteTag(@PathVariable int tagId) {
+    public ResponseEntity<?> deleteTag(@PathVariable int tagId) {
         tagService.deleteById(tagId);
         return ResponseEntity.status(HttpStatus.OK).body(DeleteResponseDto.builder().id(String.valueOf(tagId)).build());
     }

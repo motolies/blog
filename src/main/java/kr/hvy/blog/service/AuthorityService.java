@@ -26,19 +26,4 @@ public class AuthorityService {
         return authorityRepository.findByName(name);
     }
 
-    @Transactional
-    public void makeAdminUserDeptMap(String empNo) {
-        Session session = em.unwrap(Session.class);
-        try {
-            StoredProcedureQuery query = session.createStoredProcedureQuery("usp_po_admin_user_dept_map_make");
-            query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
-            query.setParameter(1, empNo);
-            query.execute();
-        } catch (RuntimeException he) {
-            he.printStackTrace();
-            throw he;
-        } finally {
-            session.close();
-        }
-    }
 }

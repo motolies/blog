@@ -47,7 +47,7 @@ public class PostController {
             @io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))}
     )
     @GetMapping(value = {""})
-    public ResponseEntity getMain() {
+    public ResponseEntity<?> getMain() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(contentService.findByMain());
@@ -58,7 +58,7 @@ public class PostController {
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
     @GetMapping(value = {"/{contentId}"})
-    public ResponseEntity getContent(@PathVariable int contentId) {
+    public ResponseEntity<?> getContent(@PathVariable int contentId) {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findById(contentId));
     }
 
@@ -67,7 +67,7 @@ public class PostController {
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
     @GetMapping(value = {"/prev-next/{contentId}"})
-    public ResponseEntity getContentPrevNext(@PathVariable int contentId) {
+    public ResponseEntity<?> getContentPrevNext(@PathVariable int contentId) {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findPrevNextById(contentId));
     }
 
@@ -76,7 +76,7 @@ public class PostController {
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
     @GetMapping(value = {"/public-content"})
-    public ResponseEntity getPublicContentId()
+    public ResponseEntity<?> getPublicContentId()
     {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.findByPublicContent());
     }
@@ -87,7 +87,7 @@ public class PostController {
             content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")}
     )
     @GetMapping(value = {"/search"})
-    public ResponseEntity searchDetail(
+    public ResponseEntity<?> searchDetail(
             Authentication auth,
             @RequestParam String query) throws JsonProcessingException {
         String decodedQuery = new String(Base64.getDecoder().decode(query), StandardCharsets.UTF_8);
@@ -108,7 +108,7 @@ public class PostController {
     @Operation(summary = "글쓰기 시작전 새로운 content를 내려준다.")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PostMapping("")
-    public ResponseEntity newPost() {
+    public ResponseEntity<?> newPost() {
         return ResponseEntity.status(HttpStatus.OK).body(contentService.newContent());
     }
 
@@ -117,7 +117,7 @@ public class PostController {
     @Operation(summary = "포스트 저장")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.Content.class))})
     @PutMapping("/{contentId}")
-    public ResponseEntity savePost(@PathVariable int contentId, @Valid @RequestBody Content newContent, BindingResult bindingResult) {
+    public ResponseEntity<?> savePost(@PathVariable int contentId, @Valid @RequestBody Content newContent, BindingResult bindingResult) {
 
         Content content = contentService.findById(contentId);
         if (content != null) {

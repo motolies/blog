@@ -121,4 +121,8 @@
          WHERE ISPUBLIC = 1
     </select>
 
+    <update id="setMain" parameterType="int" statementType="CALLABLE">
+        {call usp_content_set_main(#{id, jdbcType=INTEGER, mode=IN})}
+    </update>
+
 </mapper>

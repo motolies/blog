@@ -27,7 +27,7 @@ public class SearchEngineController {
             @io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = Content.class))}
     )
     @GetMapping(value = {""})
-    public ResponseEntity getEngines() {
+    public ResponseEntity<?> getEngines() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(searchEngineService.findAll());

@@ -19,4 +19,5 @@ public interface ContentMapper {
 
     List<Integer> findByPublicContent();
 
+    void setMain(@Param("id") int id);
 }

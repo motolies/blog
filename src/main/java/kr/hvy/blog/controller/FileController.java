@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +36,7 @@ public class FileController {
 
     @Operation(summary = "파일 아이디로 조회 후 파일을 다운로드 한다.")
     @GetMapping(value = {"/{fileId}"})
-    public ResponseEntity serveFile(@PathVariable String fileId) {
+    public ResponseEntity<?> serveFile(@PathVariable String fileId) {
         try {
             byte[] fId = ByteUtil.hexToByteArray(fileId);
             File file = fileService.load(fId);
@@ -50,7 +51,7 @@ public class FileController {
                 HttpHeaders headers = new HttpHeaders();
 
                 String fileName = file.getOriginFileName();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + "\"");
 
                 if (MediaUtils.containsImageMediaType(file.getType())) {
                     headers.setContentType(MediaType.valueOf(file.getType()));
@@ -62,7 +63,7 @@ public class FileController {
                 return ResponseEntity.ok().headers(headers).body(resource);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("file download error", e);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -71,7 +72,7 @@ public class FileController {
     @Operation(summary = "파일 업로드 저장")
     @ApiResponse(responseCode = "200", content = {@io.swagger.v3.oas.annotations.media.Content(schema = @Schema(implementation = kr.hvy.blog.entity.File.class))})
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity upload(@ModelAttribute FileDto fileDto) {
+    public ResponseEntity<?> upload(@ModelAttribute FileDto fileDto) {
         try {
             File uploadedFile = fileService.store(fileDto.getFile(), fileDto.getContentId());
             return new ResponseEntity<>(uploadedFile, HttpStatus.OK);
@@ -85,7 +86,7 @@ public class FileController {
     @Operation(summary = "포스트로 파일 목록 조회")
     @ApiResponse(responseCode = "200")
     @GetMapping("/list/{contentId}")
-    public ResponseEntity findFilesByContentId(@PathVariable int contentId) {
+    public ResponseEntity<?> findFilesByContentId(@PathVariable int contentId) {
         List<File> file = fileService.findByContentId(contentId);
         file.sort((File f1, File f2) -> f1.getOriginFileName().compareTo(f2.getOriginFileName()));
         return new ResponseEntity<>(file, HttpStatus.OK);
@@ -95,7 +96,7 @@ public class FileController {
     @Operation(summary = "파일 삭제")
     @ApiResponse(responseCode = "200")
     @DeleteMapping("/{fileId}")
-    public ResponseEntity delete(@PathVariable String fileId) {
+    public ResponseEntity<?> delete(@PathVariable String fileId) {
         byte[] bId = ByteUtil.hexToByteArray(fileId);
         fileService.deleteById(bId);
         return ResponseEntity.status(HttpStatus.OK).body(DeleteResponseDto.builder().id(fileId).build());

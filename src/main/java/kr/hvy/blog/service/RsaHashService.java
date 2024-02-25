@@ -36,7 +36,8 @@ public class RsaHashService {
 
 
     public RsaHash random() {
-        return rsaHashRepository.findById(randomKey()).orElse(null);
+        return rsaHashRepository.findById(randomKey())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 키입니다."));
     }
 
     private String randomKey() {

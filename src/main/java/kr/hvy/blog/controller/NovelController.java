@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
 @Slf4j
@@ -28,7 +29,7 @@ public class NovelController {
     private final NovelService novelService;
 
     @PostMapping("/down")
-    public ResponseEntity downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException, IOException {
+    public ResponseEntity<?> downloadNovel(@RequestBody NovelDownRequest request) throws InterruptedException, IOException {
         novelService.download(request);
         SlackMessenger.send(String.format("%s 다운로드 접수함", request.getTitle()), true);
         return ResponseEntity.ok("ok");
@@ -40,7 +41,7 @@ public class NovelController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         String fileName = MessageFormat.format("{0}.txt", title);
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1) + "\"");
 
         StreamingResponseBody responseBody = outputStream -> {
             try (InputStream novelStream = novelService.getTxtFile(title)) {

@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    @PersistenceContext
-    private EntityManager em;
-
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -44,15 +41,9 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
     public String login(LoginDto loginDto) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeySpecException, InvalidKeyException {
-        User user = userRepository.findByUsername(loginDto.getUsername());
-        if (user == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-        }
+        User user = userRepository.findByUsername(loginDto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
         RsaHash hash = rsaHashService.findByPublicKey(loginDto.getRsaKey())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 키입니다."));

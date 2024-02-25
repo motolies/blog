@@ -1,16 +1,17 @@
 package kr.hvy.blog.model;
 
-public enum SlackChannelType {
-    HVY_NOTIFY("#hvy-notify"),
-    HVY_ERROR("#hvy-error");
+import io.github.motolies.code.CommonEnumCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    private String channel;
+@Getter
+@AllArgsConstructor
+public enum SlackChannelType implements CommonEnumCode<String> {
+    HVY_NOTIFY("NOTIFY", "알림채널", "#hvy-notify"),
+    HVY_ERROR("ERROR", "에러채널", "#hvy-error");
 
-    SlackChannelType(String channel) {
-        this.channel = channel;
-    }
+    private final String code;
+    private final String desc;
+    private final String channel;
 
-    public String getChannel() {
-        return channel;
-    }
 }

@@ -25,9 +25,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("No user found with username '%s'.", username)));
 
-        if (!user.getAuthority().stream().anyMatch(a -> a.getName() == AuthorityName.ROLE_USER)) {
+        if (user.getAuthority().stream().noneMatch(a -> a.getName() == AuthorityName.ROLE_USER)) {
             Authority userAuth = authService.findByName(AuthorityName.ROLE_USER);
             Set<Authority> auths = user.getAuthority();
             auths.add(userAuth);
@@ -35,9 +36,7 @@ public class JwtUserDetailsService implements UserDetailsService {
             user.getAuthority().add(userAuth);
         }
 
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else if (!user.getEnabled()) {
+       if (!user.getEnabled()) {
             throw new AuthenticationException(String.format("'%s' is disabled.", username));
         } else {
             return JwtUserFactory.create(user);

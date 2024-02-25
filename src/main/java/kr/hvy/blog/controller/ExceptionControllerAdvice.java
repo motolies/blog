@@ -18,12 +18,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
 
-
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected ResponseEntity defaultException(HttpServletRequest request, Exception e) {
-
+    protected ResponseEntity<?> defaultException(HttpServletRequest request, Exception e) {
         log.error(e.getMessage(), e);
+
+        SlackMessenger.send(e);
 
         Map<String, Object> map = new HashMap<>();
         map.put("message", "ERROR");

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.List;
 
 @Slf4j
@@ -33,17 +34,17 @@ public class FileService {
 
     @Value("${path.upload}")
     public void setRootLocation(String path) {
-        this.rootLocation = Paths.get(path);
+        rootLocation = Paths.get(path);
     }
 
     public File load(byte[] id) {
-        return fileRepository.findById(id).orElse(null);
+        return fileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
     }
 
     @Transactional
     public void deleteById(byte[] id) {
 
-        File file = fileRepository.findById(id).orElse(null);
+        File file = fileRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("파일이 존재하지 않습니다."));
 
         if (file != null) {
             String path = file.getPath();
@@ -92,10 +93,8 @@ public class FileService {
 
             Resource resource = loadAsResource(saveFileName);
 
-            Content content = contentRepository.findById(contentId).orElse(null);
-            if (content == null) {
-                throw new Exception("Content is Null (ID) = " + contentId);
-            }
+            Content content = contentRepository.findById(contentId)
+                    .orElseThrow(() -> new IllegalArgumentException(MessageFormat.format("컨텐츠가 존재하지 않습니다. id={0}", contentId)));
 
             File sfile = new File();
             sfile.setContent(content);
