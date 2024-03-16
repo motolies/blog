@@ -10,6 +10,6 @@ public enum AuthorityName implements CommonEnumCode<String> {
     ROLE_USER("ROLE_USER", "사용자"),
     ROLE_ADMIN("ROLE_ADMIN", "관리자");
 
-    private String code;
-    private String desc;
+    private final String code;
+    private final String desc;
 }
