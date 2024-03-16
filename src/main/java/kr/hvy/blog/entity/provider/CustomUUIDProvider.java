@@ -1,6 +1,7 @@
 package kr.hvy.blog.entity.provider;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -13,7 +14,8 @@ public class CustomUUIDProvider implements IdentifierGenerator {
 
   @Override
   public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-    return (Serializable) session.createQuery("SELECT FN_ORDERED_UUID()", byte[].class);
+    return (Serializable) Arrays.stream(session.createQuery("SELECT FN_ORDERED_UUID()", Object[].class).uniqueResult())
+        .toList()
+        .get(0);
   }
-
 }
