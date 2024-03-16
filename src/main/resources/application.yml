@@ -72,6 +72,7 @@ logging:
       security: ERROR
       repository: TRACE
       mapper: TRACE
+    io.github.motolies: DEBUG
   logback:
     rollingpolicy:
       max-history: 7
