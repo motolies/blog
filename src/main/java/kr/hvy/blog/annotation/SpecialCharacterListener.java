@@ -1,13 +1,12 @@
 package kr.hvy.blog.annotation;
 
-import lombok.extern.slf4j.Slf4j;
-
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SpecialCharacterListener {

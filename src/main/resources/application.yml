@@ -40,12 +40,11 @@ spring:
       fail-on-unknown-properties: false
     serialization:
       indent-output: true
-  redis:
-    host: ${REDIS_HOST:redis}
-    port: ${REDIS_PORT:6379}
-    cache:
-      timeout: 300
-
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      timeout: 3600
 
 #Configure Mybatis
 mybatis:

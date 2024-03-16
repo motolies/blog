@@ -1,16 +1,15 @@
 package kr.hvy.blog.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import java.util.List;
+import java.util.Set;
 import kr.hvy.blog.entity.Tag;
 import kr.hvy.blog.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Service

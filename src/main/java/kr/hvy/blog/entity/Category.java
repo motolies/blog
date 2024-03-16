@@ -1,18 +1,36 @@
 package kr.hvy.blog.entity;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 @Getter
@@ -48,7 +66,7 @@ public class Category implements Serializable {
 
     // serialize deserialize 이름 다르게 하려면 아래처럼 get set 함수 위에 다른 프로퍼티명을 쓴다
     @Column(name = "PId", columnDefinition = "VARCHAR(32)")
-    @GeneratedValue(generator = "CATEGORY_PID_CATEGORYID_GENERATOR")
+//    @GeneratedValue(generator = "CATEGORY_PID_CATEGORYID_GENERATOR")
     @GenericGenerator(name = "CATEGORY_PID_CATEGORYID_GENERATOR", strategy = "foreign", parameters = @Parameter(name = "property", value = "p"))
     private String pId;
 

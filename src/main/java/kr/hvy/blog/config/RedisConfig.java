@@ -28,13 +28,13 @@ import java.time.Duration;
 @EnableCaching
 @EnableRedisRepositories
 public class RedisConfig {
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String host;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int port;
 
-    @Value("${spring.redis.cache.timeout}")
+    @Value("${spring.data.redis.timeout}")
     private long cacheTimeout;
 
     @Bean
