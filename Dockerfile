@@ -48,5 +48,7 @@ ENV DB_USER skyscape
 ENV DB_PASS skyscape!!
 ENV JWT_SECRET jwt_secret_key!!@@
 ENV PORT 8080
+ENV SPRING_PROFILES_ACTIVE=default
+
 EXPOSE ${PORT}
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "/app.jar"]
