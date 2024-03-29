@@ -68,6 +68,27 @@ public class SlackMessenger {
     }
   }
 
+  public static void sendMarkDown(SlackChannelType channel, String message, boolean isChannel) {
+    try {
+      if (isChannel) {
+        message = "<!channel> \n" + message;
+      }
+
+      String finalMessage = message;
+      ChatPostMessageRequest request = ChatPostMessageRequest.builder()
+          .channel(channel.getChannel())
+          .blocks(asBlocks(
+              section(section -> section.text(markdownText(finalMessage)))
+          ))
+          .build();
+
+      METHODS_CLIENT.chatPostMessage(request);
+
+    } catch (SlackApiException | IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+
   public static void send(SlackChannelType channel, String message, boolean isChannel) {
     try {
       if (isChannel) {

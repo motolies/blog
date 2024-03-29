@@ -1,11 +1,13 @@
 package kr.hvy.blog.scheduler;
 
 import io.github.motolies.scheduler.AbstractScheduler;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import kr.hvy.blog.model.SlackChannelType;
 import kr.hvy.blog.util.SlackMessenger;
@@ -38,7 +40,7 @@ public class PpomppuScheduler extends AbstractScheduler {
 
 
   @Scheduled(cron = "${scheduler.ppomppu.cron-expression}")    // 10분마다
-  @SchedulerLock(name = "${scheduler.ppomppu.lock-name}", lockAtLeastFor = "PT5M", lockAtMostFor = "PT9M")
+  @SchedulerLock(name = "${scheduler.ppomppu.lock-name}", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
   public void monitoring() {
 
     proceedScheduler("PPOMPPU")
@@ -66,7 +68,7 @@ public class PpomppuScheduler extends AbstractScheduler {
       List<Ppomppu> sendList = list.stream()
           .filter(ppomppu -> savedList.stream().noneMatch(saved -> saved.getSeq() == ppomppu.getSeq()))
           .peek(ppomppu -> {
-            SlackMessenger.send(SlackChannelType.HVY_HOT_DEAL, ppomppu.getSlackMessage(), false);
+            SlackMessenger.sendMarkDown(SlackChannelType.HVY_HOT_DEAL, ppomppu.getSlackMessage(), false);
             ppomppuRepository.save(ppomppu);
           }).toList();
 
@@ -75,17 +77,6 @@ public class PpomppuScheduler extends AbstractScheduler {
       SlackMessenger.send(e);
       log.error(e.getMessage(), e);
     }
-  }
-
-  public List<Ppomppu> findBySeqIn(List<Integer> seqs) {
-    String[] keys = seqs.stream()
-        .map(seq -> "ppomppuN:" + seq)
-        .toArray(String[]::new);
-    List<Ppomppu> result = redisTemplate.opsForValue().multiGet(Arrays.asList(keys))
-        .stream()
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    return result;
   }
 
   private List<Ppomppu> pageProcess(String content) {
@@ -110,13 +101,39 @@ public class PpomppuScheduler extends AbstractScheduler {
     return Ppomppu.builder()
         .seq(Integer.parseInt(seqElements.text()))
         .title(Objects.requireNonNull(titles.first()).text())
-        .link(PPOMPPU_BASE_URL + Objects.requireNonNull(element.select("a.baseList-title").first()).attr("href"))
+        .link(getLink(element))
         .view(Integer.parseInt(element.select("td.eng.list_vspace[colspan=2]").get(3).text()))
         .recommendUp(getRecommendUp(element))
         .recommendDown(getRecommendDown(element))
         .comment(getComment(element))
         .build();
   }
+
+  private String getLink(org.jsoup.nodes.Element element) {
+    String originalUrl = Objects.requireNonNull(element.select("a.baseList-title").first()).attr("href");
+
+    // URL에서 쿼리 스트링 부분만 추출
+    String queryString = originalUrl.substring(originalUrl.indexOf('?') + 1);
+
+    // 쿼리 스트링을 &로 분리하여 Map에 저장
+    Map<String, String> params = new HashMap<>();
+    for (String param : queryString.split("&")) {
+      String[] keyValue = param.split("=");
+      String key = keyValue[0];
+      String value = keyValue.length > 1 ? keyValue[1] : "";
+      params.put(key, value);
+    }
+
+    // id와 no 파라미터 값만 추출하여 새로운 URL 생성
+    StringBuilder newUrl = new StringBuilder(originalUrl.substring(0, originalUrl.indexOf('?') + 1));
+    newUrl.append("id=").append(params.get("id"));
+    if (params.containsKey("no")) {
+      newUrl.append("&no=").append(params.get("no"));
+    }
+
+    return PPOMPPU_BASE_URL + newUrl.toString();
+  }
+
 
   private int getRecommendUp(org.jsoup.nodes.Element element) {
     String recommend = element.select("td.eng.list_vspace[colspan=2]").get(2).text().trim();
