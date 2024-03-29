@@ -101,3 +101,21 @@ springdoc:
 # slack
 slack:
   token: ${SLACK_BOT_TOKEN:xoxb-xxxxxxxxxxxx-xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx}
+
+
+# scheduler
+scheduler:
+  ppomppu:
+    lock-name: PPOMPPU-TEST
+    cron-expression: "*/10 * * * * ?"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+# scheduler
+scheduler:
+  ppomppu:
+    lock-name: PPOMPPU-PROD
+    cron-expression: "* */10 * * * ?"

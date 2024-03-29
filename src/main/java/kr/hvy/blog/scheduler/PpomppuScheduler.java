@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import kr.hvy.blog.model.SlackChannelType;
 import kr.hvy.blog.util.SlackMessenger;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,7 +18,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,8 +25,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-@AllArgsConstructor
-@Profile("!default")
+@RequiredArgsConstructor
+//@Profile("!default")
 public class PpomppuScheduler extends AbstractScheduler {
 
   private RedisTemplate<String, Ppomppu> redisTemplate;
@@ -38,8 +37,8 @@ public class PpomppuScheduler extends AbstractScheduler {
   private final String PPOMPPU_BOARD_URL = PPOMPPU_BASE_URL + "zboard.php?id=ppomppu&page={0}";
 
 
-  @Scheduled(cron = "* */10 * * * ?")    // 10분마다
-  @SchedulerLock(name = "PPOMPPU-Scheduler", lockAtLeastFor = "PT5M", lockAtMostFor = "PT9M")
+  @Scheduled(cron = "${scheduler.ppomppu.cron-expression}")    // 10분마다
+  @SchedulerLock(name = "${scheduler.ppomppu.lock-name}", lockAtLeastFor = "PT5M", lockAtMostFor = "PT9M")
   public void monitoring() {
 
     proceedScheduler("PPOMPPU")
