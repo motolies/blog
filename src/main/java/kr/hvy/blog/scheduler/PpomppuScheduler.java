@@ -1,8 +1,6 @@
 package kr.hvy.blog.scheduler;
 
 import io.github.motolies.scheduler.AbstractScheduler;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +66,7 @@ public class PpomppuScheduler extends AbstractScheduler {
       List<Ppomppu> sendList = list.stream()
           .filter(ppomppu -> savedList.stream().noneMatch(saved -> saved.getSeq() == ppomppu.getSeq()))
           .peek(ppomppu -> {
-            SlackMessenger.sendMarkDown(SlackChannelType.HVY_HOT_DEAL, ppomppu.getSlackMessage(), false);
+            SlackMessenger.send(SlackChannelType.HVY_HOT_DEAL, ppomppu.getSlackMessage(), false);
             ppomppuRepository.save(ppomppu);
           }).toList();
 

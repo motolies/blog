@@ -14,6 +14,7 @@ import com.slack.api.model.Attachment;
 import com.slack.api.model.block.LayoutBlock;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,8 @@ public class SlackMessenger {
 
   private static final String SLACK_TOKEN = System.getenv("SLACK_BOT_TOKEN");
   private static final MethodsClient METHODS_CLIENT = Slack.getInstance().methods(SLACK_TOKEN);
+
+  // todo : 나중에 용도에 따라서 기본 템플릿을 분리해봐야 겠다
 
   @NotNull
   private static List<LayoutBlock> getBlocks(Exception e) {
@@ -68,35 +71,21 @@ public class SlackMessenger {
     }
   }
 
-  public static void sendMarkDown(SlackChannelType channel, String message, boolean isChannel) {
-    try {
-      if (isChannel) {
-        message = "<!channel> \n" + message;
-      }
-
-      String finalMessage = message;
-      ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-          .channel(channel.getChannel())
-          .blocks(asBlocks(
-              section(section -> section.text(markdownText(finalMessage)))
-          ))
-          .build();
-
-      METHODS_CLIENT.chatPostMessage(request);
-
-    } catch (SlackApiException | IOException e) {
-      log.error(e.getMessage());
-    }
-  }
-
   public static void send(SlackChannelType channel, String message, boolean isChannel) {
     try {
+      List<LayoutBlock> blocks = new ArrayList<>();
+
       if (isChannel) {
-        message = "<!channel> \n" + message;
+        blocks.add(section(section -> section.text(markdownText("<!channel>"))));
       }
+
+      blocks.addAll(Arrays.asList(
+          section(section -> section.text(markdownText(message)))
+      ));
+
       ChatPostMessageRequest request = ChatPostMessageRequest.builder()
           .channel(channel.getChannel())
-          .text(message)
+          .blocks(blocks)
           .build();
 
       METHODS_CLIENT.chatPostMessage(request);
@@ -105,6 +94,8 @@ public class SlackMessenger {
       log.error(e.getMessage());
     }
   }
+
+
 
   public static void send(SlackChannelType channel, String message) {
     send(channel, message, false);
