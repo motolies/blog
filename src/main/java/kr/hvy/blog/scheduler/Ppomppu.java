@@ -25,7 +25,7 @@ public class Ppomppu {
   private int comment;
 
   public String getSlackMessage() {
-    return String.format("제목: %s\n링크: %s", title, link);
+    return String.format("%s\n%s", title, link);
   }
 
 }

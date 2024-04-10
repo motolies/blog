@@ -79,7 +79,13 @@ public class PpomppuScheduler extends AbstractScheduler {
 
   private List<Ppomppu> pageProcess(String content) {
     Document document = Jsoup.parse(content);
-    Elements trElements = document.select("table#revolution_main_table tbody tr.common-list0,table#revolution_main_table tbody tr.common-list1");
+    // 광고를 거르기 위해서 게시물 번호 부분에 img 태그가 없는 tr 태그만 추출
+    Elements noImageTds = document.select("#revolution_main_table > tbody > tr > td.baseList-space.baseList-numb:not(:has(img))");
+
+    // 이미지가 없는 td 요소의 부모 tr 요소 리스트 가져오기
+    List<Element> trElements = noImageTds.stream()
+        .map(Element::parent)
+        .toList();
 
     return trElements.stream()
         .map(this::parseElement)
@@ -90,17 +96,16 @@ public class PpomppuScheduler extends AbstractScheduler {
   private Ppomppu parseElement(org.jsoup.nodes.Element element) {
 
     // 제목에서 품절여부 체크
-    Elements titles = element.select("font.list_title");
-    Element seqElements = element.select("td.eng.list_vspace[colspan=2]").first();
-    if (titles.isEmpty() || ObjectUtils.isEmpty(seqElements) || StringUtils.isBlank(seqElements.text())) {
+    Element seqElements = element.select(".baseList-title span").first();
+    if (ObjectUtils.isEmpty(seqElements) || StringUtils.isBlank(seqElements.text())) {
       return null;
     }
 
     return Ppomppu.builder()
-        .seq(Integer.parseInt(seqElements.text()))
-        .title(Objects.requireNonNull(titles.first()).text())
+        .seq(Integer.parseInt(element.selectFirst(".baseList-numb").text()))
+        .title(seqElements.text())
         .link(getLink(element))
-        .view(Integer.parseInt(element.select("td.eng.list_vspace[colspan=2]").get(3).text()))
+        .view(Integer.parseInt(element.selectFirst(".baseList-views").text()))
         .recommendUp(getRecommendUp(element))
         .recommendDown(getRecommendDown(element))
         .comment(getComment(element))
@@ -108,7 +113,7 @@ public class PpomppuScheduler extends AbstractScheduler {
   }
 
   private String getLink(org.jsoup.nodes.Element element) {
-    String originalUrl = Objects.requireNonNull(element.select("a.baseList-title").first()).attr("href");
+    String originalUrl = element.selectFirst(".baseList-title").attr("href");
 
     // URL에서 쿼리 스트링 부분만 추출
     String queryString = originalUrl.substring(originalUrl.indexOf('?') + 1);
@@ -134,29 +139,37 @@ public class PpomppuScheduler extends AbstractScheduler {
 
 
   private int getRecommendUp(org.jsoup.nodes.Element element) {
-    String recommend = element.select("td.eng.list_vspace[colspan=2]").get(2).text().trim();
-    if (recommend.contains("-")) {
-      return Integer.parseInt(recommend.split("-")[0].trim());
-    } else {
+    Element recommend = element.selectFirst(".baseList-rec");
+    if (Objects.isNull(recommend) || StringUtils.isBlank(recommend.text())) {
       return 0;
+    } else {
+      if (recommend.text().contains("-")) {
+        return Integer.parseInt(recommend.text().split("-")[0].trim());
+      } else {
+        return 0;
+      }
     }
   }
 
   private int getRecommendDown(org.jsoup.nodes.Element element) {
-    String recommend = element.select("td.eng.list_vspace[colspan=2]").get(2).text().trim();
-    if (recommend.contains("-")) {
-      return Integer.parseInt(recommend.split("-")[0].trim());
-    } else {
+    Element recommend = element.selectFirst(".baseList-rec");
+    if (Objects.isNull(recommend) || StringUtils.isBlank(recommend.text())) {
       return 0;
+    } else {
+      if (recommend.text().contains("-")) {
+        return Integer.parseInt(recommend.text().split("-")[1].trim());
+      } else {
+        return 0;
+      }
     }
   }
 
   private int getComment(org.jsoup.nodes.Element element) {
-    Elements spans = element.select("span[onclick*=win_comment]");
-    if (spans.isEmpty()) {
+    Element comment = element.selectFirst(".baseList-c");
+    if (Objects.isNull(comment) || StringUtils.isBlank(comment.text())) {
       return 0;
     } else {
-      return Integer.parseInt(Objects.requireNonNull(spans.first()).text());
+      return Integer.parseInt(comment.text());
     }
   }
 
