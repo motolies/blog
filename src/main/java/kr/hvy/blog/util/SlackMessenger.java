@@ -31,14 +31,14 @@ public class SlackMessenger {
   // todo : 나중에 용도에 따라서 기본 템플릿을 분리해봐야 겠다
 
   @NotNull
-  private static List<LayoutBlock> getBlocks(Exception e) {
+  private static List<LayoutBlock> getBlocks(Exception e, boolean isChannel) {
     String packageName = e.getStackTrace()[0].getClassName();
     String className = packageName.substring(packageName.lastIndexOf(".") + 1);
     String methodName = e.getStackTrace()[0].getMethodName();
     int lineNumber = e.getStackTrace()[0].getLineNumber();
 
     return asBlocks(
-        section(section -> section.text(markdownText("<!channel>"))),
+        isChannel ? section(section -> section.text(markdownText("<!channel>"))) : null,
         header(header -> header.text(plainText(e.getMessage()))),
         section(section -> section.text(markdownText(MessageFormat.format("*Package* {0}", packageName)))),
         section(section -> section.fields(Arrays.asList(
@@ -49,13 +49,16 @@ public class SlackMessenger {
     );
   }
 
-
   public static void send(Exception e) {
+    send(e, false);
+  }
+
+  public static void send(Exception e, boolean isChannel) {
     try {
 
       ChatPostMessageRequest request = ChatPostMessageRequest.builder()
           .channel(SlackChannelType.HVY_ERROR.getChannel())
-          .blocks(getBlocks(e))
+          .blocks(getBlocks(e, isChannel))
           .attachments(Collections.singletonList(
               Attachment.builder()
                   .color("#ff0000") // 빨간색 (#rgb 또는 #rrggbb 형식)

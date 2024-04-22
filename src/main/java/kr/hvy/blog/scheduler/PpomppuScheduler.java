@@ -26,7 +26,6 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-//@Profile("!default")
 public class PpomppuScheduler extends AbstractScheduler {
 
   private RedisTemplate<String, Ppomppu> redisTemplate;

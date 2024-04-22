@@ -7,23 +7,23 @@ import java.util.Map;
 
 public class MediaUtils {
     
-    private static Map<String, MediaType> mediaMap;
+    private static final Map<String, MediaType> MEDIA_TYPE_MAP;
     
     static {
-        mediaMap = new HashMap<>();
+        MEDIA_TYPE_MAP = new HashMap<>();
         
-        mediaMap.put("JPEG", MediaType.IMAGE_JPEG);
-        mediaMap.put("JPG", MediaType.IMAGE_JPEG);
-        mediaMap.put("GIF", MediaType.IMAGE_GIF);
-        mediaMap.put("PNG", MediaType.IMAGE_PNG);
+        MEDIA_TYPE_MAP.put("JPEG", MediaType.IMAGE_JPEG);
+        MEDIA_TYPE_MAP.put("JPG", MediaType.IMAGE_JPEG);
+        MEDIA_TYPE_MAP.put("GIF", MediaType.IMAGE_GIF);
+        MEDIA_TYPE_MAP.put("PNG", MediaType.IMAGE_PNG);
     }
     
     public static MediaType getMediaType(String type) {
-        return mediaMap.get(type.toUpperCase());
+        return MEDIA_TYPE_MAP.get(type.toUpperCase());
     }
     
     public static boolean containsImageMediaType(String mediaType) {
-        return mediaMap.values().contains(MediaType.valueOf(mediaType));
+        return MEDIA_TYPE_MAP.containsValue(MediaType.valueOf(mediaType));
     }
     
 }
