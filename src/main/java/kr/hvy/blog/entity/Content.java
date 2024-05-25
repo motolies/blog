@@ -19,6 +19,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import kr.hvy.blog.util.TimeUtil;
 import lombok.Getter;
@@ -35,6 +36,7 @@ import org.hibernate.annotations.Parameter;
 @Table(name = "content")
 public class Content implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 3019806640718052303L;
 
   public Content() {

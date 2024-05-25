@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.io.Serial;
 import java.io.Serializable;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ import org.hibernate.annotations.Formula;
 @Table(name = "`tag`")
 public class Tag implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 3493527380866893072L;
 
     @Column(name = "Id", nullable = false, length = 11)

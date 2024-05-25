@@ -1,5 +1,6 @@
 package kr.hvy.blog.model.response;
 
+import java.io.Serial;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 @Builder
 public class LoginResponseDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -1421099225645521465L;
 
     private String token;

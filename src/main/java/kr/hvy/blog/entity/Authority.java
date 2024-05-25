@@ -13,6 +13,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import lombok.Setter;
 @EntityListeners({SpecialCharacterListener.class})
 public class Authority implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 7361534753922626001L;
 
   @Column(name = "Id", nullable = false, length = 11)

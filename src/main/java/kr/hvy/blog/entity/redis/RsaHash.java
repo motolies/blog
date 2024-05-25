@@ -1,5 +1,6 @@
 package kr.hvy.blog.entity.redis;
 
+import java.io.Serial;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.util.Base64;
 @RedisHash(value = "rsa")
 @ToString
 public class RsaHash implements Serializable {
+    @Serial
     private static final long serialVersionUID = 2163166868956980186L;
 
     @Id

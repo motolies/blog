@@ -21,6 +21,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ import org.hibernate.annotations.Parameter;
 @Table(name = "category")
 public class Category implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 6223962078070813686L;
 
     @Column(name = "Id", nullable = false, length = 32)

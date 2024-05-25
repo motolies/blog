@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import kr.hvy.blog.annotation.SpecialCharacterListener;
 import kr.hvy.blog.util.ByteUtil;
@@ -27,6 +28,7 @@ import org.hibernate.annotations.GenericGenerator;
 @EntityListeners({SpecialCharacterListener.class})
 public class User implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -5404087020256270934L;
 
 

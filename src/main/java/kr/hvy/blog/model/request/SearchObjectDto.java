@@ -1,6 +1,7 @@
 package kr.hvy.blog.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 public class SearchObjectDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4289845041651026684L;
 
     @Schema(name = "searchType", example = "TITLE | CONTENT | FULL")

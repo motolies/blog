@@ -1,5 +1,6 @@
 package kr.hvy.blog.model.request;
 
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class SearchElementDto implements Serializable {
 
 
+    @Serial
     private static final long serialVersionUID = -7032938059288406829L;
 
     private String id;

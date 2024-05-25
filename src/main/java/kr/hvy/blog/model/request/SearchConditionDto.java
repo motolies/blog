@@ -1,6 +1,7 @@
 package kr.hvy.blog.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @Setter
 public class SearchConditionDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 6372195696197437659L;
 
     @Schema(name = "logic", example = "AND | OR")
