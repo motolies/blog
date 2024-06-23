@@ -1,5 +1,6 @@
 package kr.hvy.blog.module.novel.domain;
 
+import io.github.motolies.util.time.TimeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +12,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import kr.hvy.blog.infra.support.TimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

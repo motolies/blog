@@ -2,6 +2,7 @@ package kr.hvy.blog.module.content.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.motolies.util.time.TimeUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,11 +22,10 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
-import kr.hvy.blog.module.file.domain.File;
-import kr.hvy.blog.module.tag.domain.Tag;
 import kr.hvy.blog.module.auth.domain.User;
 import kr.hvy.blog.module.category.domain.Category;
-import kr.hvy.blog.infra.support.TimeUtil;
+import kr.hvy.blog.module.file.domain.File;
+import kr.hvy.blog.module.tag.domain.Tag;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
@@ -135,11 +135,11 @@ public class Content implements Serializable {
   private java.util.Set<File> file = new java.util.HashSet<File>();
 
   private void updateNormalBody() {
-      if (this.body == null) {
-          this.normalBody = this.body = "";
-      } else {
-          this.normalBody = body.replaceAll("<[^>]*>", "");
-      }
+    if (this.body == null) {
+      this.normalBody = this.body = "";
+    } else {
+      this.normalBody = body.replaceAll("<[^>]*>", "");
+    }
   }
 
   // https://thoughts-on-java.org/hibernate-tips-the-best-way-to-remove-entities-from-a-many-to-many-association/

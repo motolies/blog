@@ -1,6 +1,7 @@
 package kr.hvy.blog.module.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.motolies.util.bytes.ByteUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -15,7 +16,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import kr.hvy.blog.module.content.annotation.SpecialCharacterListener;
 import kr.hvy.blog.module.content.domain.Content;
-import kr.hvy.blog.infra.support.ByteUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
