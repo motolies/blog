@@ -1,4 +1,4 @@
-package kr.hvy.blog.scheduler;
+package kr.hvy.blog.scheduler.ppomppu;
 
 import io.github.motolies.scheduler.AbstractScheduler;
 import java.text.MessageFormat;
@@ -18,7 +18,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -28,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class PpomppuScheduler extends AbstractScheduler {
 
-  private RedisTemplate<String, Ppomppu> redisTemplate;
   private final RestTemplate restTemplateLogging;
   private final PpomppuRepository ppomppuRepository;
 

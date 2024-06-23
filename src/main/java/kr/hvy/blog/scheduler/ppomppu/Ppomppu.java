@@ -1,4 +1,4 @@
-package kr.hvy.blog.scheduler;
+package kr.hvy.blog.scheduler.ppomppu;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

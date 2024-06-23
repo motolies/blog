@@ -106,6 +106,9 @@ slack:
 
 # scheduler
 scheduler:
+  public-ip:
+    lock-name: PUBLIC-IP-TEST
+    cron-expression: "*/10 * * * * ?"
   ppomppu:
     lock-name: PPOMPPU-TEST
     cron-expression: "*/10 * * * * ?"
@@ -117,6 +120,9 @@ spring:
       on-profile: prod
 # scheduler
 scheduler:
+  public-ip:
+    lock-name: PUBLIC-IP-PROD
+    cron-expression: "0 * * * * ?"
   ppomppu:
     lock-name: PPOMPPU-PROD
     cron-expression: "* */10 * * * ?"
