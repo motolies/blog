@@ -49,7 +49,7 @@ spring:
 
 #Configure Mybatis
 mybatis:
-  type-aliases-package: kr.hvy.blog.model
+  type-aliases-package: kr.hvy.blog.module
   mapper-locations: classpath:mybatis-mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true

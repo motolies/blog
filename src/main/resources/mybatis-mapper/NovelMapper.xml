@@ -2,7 +2,7 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.hvy.blog.mapper.NovelMapper">
+<mapper namespace="kr.hvy.blog.module.novel.mapper.NovelMapper">
     <select id="findSeqByTitle" resultType="Integer">
         SELECT Seq FROM novel WHERE Title = #{title};
     </select>
