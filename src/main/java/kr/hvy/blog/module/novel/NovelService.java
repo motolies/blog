@@ -1,5 +1,6 @@
 package kr.hvy.blog.module.novel;
 
+import io.github.motolies.config.TimedSemaphoreHandler;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Service;
 public class NovelService {
 
   private final TaskExecutor taskExecutor;
-
+  private final TimedSemaphoreHandler timedSemaphoreHandler;
   private final NovelMapper novelMapper;
   private final NovelRepository novelRepository;
 
@@ -69,6 +70,9 @@ public class NovelService {
       IntStream.range(0, novelRequireList.size())
           .forEach(index -> {
             try {
+              // 0.6초에 한 번씩 지속적으로 호출할 수 있도록
+              timedSemaphoreHandler.acquire("novelDownload", 600);
+
               LinkInfo linkInfo = novelRequireList.get(index);
               String content = downloadNovel(linkInfo.getLink(), "novel_content");
 
@@ -89,7 +93,6 @@ public class NovelService {
                 log.info(message);
               }
 
-              Thread.sleep(1000);
             } catch (Exception e) {
               log.error("download Exception title: {}", request.getTitle(), e);
               SlackMessenger.send(e);
