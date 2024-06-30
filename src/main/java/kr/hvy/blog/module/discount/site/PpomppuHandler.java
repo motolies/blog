@@ -17,10 +17,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PpomppuHandler extends AbstractDiscountHandler {
 
   private final String BASE_URL = "https://www.ppomppu.co.kr/zboard/";
