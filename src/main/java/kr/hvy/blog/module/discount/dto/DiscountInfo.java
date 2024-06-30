@@ -1,5 +1,6 @@
 package kr.hvy.blog.module.discount.dto;
 
+import kr.hvy.blog.module.discount.code.DiscountType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Data
 @Builder
 @RedisHash(value = "discountN", timeToLive = 60 * 60 * 24 * 3)
-public class Discount {
+public class DiscountInfo {
 
   @Id
   private int redisKey;
@@ -23,6 +24,7 @@ public class Discount {
   private int recommendUp;
   private int recommendDown;
   private int comment;
+  private DiscountType type;
 
   public String getSlackMessage() {
     return String.format("%s\n%s", title, link);

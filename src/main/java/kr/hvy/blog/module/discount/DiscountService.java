@@ -1,7 +1,7 @@
 package kr.hvy.blog.module.discount;
 
 import java.util.List;
-import kr.hvy.blog.module.discount.dto.Discount;
+import kr.hvy.blog.module.discount.dto.DiscountInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +11,11 @@ public class DiscountService {
 
   private final DiscountRepository discountRepository;
 
-  public List<Discount> savedDiscounts(List<String> discountIds) {
-    return (List<Discount>) discountRepository.findAllById(discountIds);
+  public List<DiscountInfo> savedDiscounts(List<String> discountIds) {
+    return (List<DiscountInfo>) discountRepository.findAllById(discountIds);
   }
 
-  public void save(Discount discount) {
+  public void save(DiscountInfo discount) {
     discountRepository.save(discount);
   }
 

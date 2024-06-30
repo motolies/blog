@@ -1,17 +1,17 @@
 package kr.hvy.blog.module.discount;
 
 import java.util.List;
-import java.util.function.Predicate;
 import kr.hvy.blog.infra.exception.AuthenticationException;
 import kr.hvy.blog.infra.notify.SlackChannelType;
 import kr.hvy.blog.infra.notify.SlackMessenger;
-import kr.hvy.blog.module.discount.dto.Discount;
+import kr.hvy.blog.module.discount.dto.DiscountInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
-public abstract class AbstractDiscountHandler {
+public abstract class AbstractDiscountHandler implements DiscountInterface {
 
   @Autowired
   protected RestTemplate restTemplateLogging;
@@ -28,11 +28,7 @@ public abstract class AbstractDiscountHandler {
     return true;
   }
 
-  protected abstract List<Discount> getList();
-
-  protected abstract Predicate<Discount> filtering();
-
-
+  @Async
   public void run() {
     try {
 
@@ -40,12 +36,12 @@ public abstract class AbstractDiscountHandler {
         throw new AuthenticationException("인증정보가 없습니다.");
       }
 
-      List<Discount> discountList = getList().stream()
+      List<DiscountInfo> discountList = getList().stream()
           .filter(filtering())
           .toList();
 
       List<String> seqList = discountList.stream().map(p -> String.valueOf(p.getRedisKey())).toList();
-      List<Discount> savedList = discountService.savedDiscounts(seqList);
+      List<DiscountInfo> savedList = discountService.savedDiscounts(seqList);
 
       discountList.stream()
           .filter(discount -> savedList.stream().noneMatch(saved -> saved.getRedisKey() == discount.getRedisKey()))

@@ -3,7 +3,7 @@ package kr.hvy.blog.infra.scheduler;
 import io.github.motolies.scheduler.AbstractScheduler;
 import java.util.Arrays;
 import kr.hvy.blog.infra.core.BeanHandler;
-import kr.hvy.blog.module.discount.DiscountType;
+import kr.hvy.blog.module.discount.code.DiscountType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;

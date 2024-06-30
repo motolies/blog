@@ -1,4 +1,4 @@
-package kr.hvy.blog.module.discount;
+package kr.hvy.blog.module.discount.site;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import kr.hvy.blog.module.discount.dto.Discount;
+import kr.hvy.blog.module.discount.AbstractDiscountHandler;
+import kr.hvy.blog.module.discount.DiscountService;
+import kr.hvy.blog.module.discount.code.DiscountType;
+import kr.hvy.blog.module.discount.dto.DiscountInfo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -20,38 +23,35 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class PpomppuHandler extends AbstractDiscountHandler {
 
-  private final String PPOMPPU_BASE_URL = "https://www.ppomppu.co.kr/zboard/";
-  private final String PPOMPPU_BOARD_URL = PPOMPPU_BASE_URL + "zboard.php?id=ppomppu&page={0}";
+  private final String BASE_URL = "https://www.ppomppu.co.kr/zboard/";
+  private final String BOARD_URL = BASE_URL + "zboard.php?id=ppomppu&page={0}";
 
   protected PpomppuHandler(RestTemplate restTemplateLogging, DiscountService discountService) {
     super(restTemplateLogging, discountService);
   }
 
   @Override
-  protected List<Discount> getList() {
+  public List<DiscountInfo> getList() {
     return IntStream.range(1, 4)
         .mapToObj(i -> {
-          String url = MessageFormat.format(PPOMPPU_BOARD_URL, i);
+          String url = MessageFormat.format(BOARD_URL, i);
           String response = restTemplateLogging.getForObject(url, String.class);
           return pageProcess(response);
         })
         .flatMap(List::stream)
         .filter(Objects::nonNull)
-        .filter(discountProduct -> discountProduct.getView() > 4000
-            || (discountProduct.getRecommendUp() > 4 && discountProduct.getRecommendDown() + 2 < discountProduct.getRecommendUp())
-            || discountProduct.getComment() > 25)
         .toList();
   }
 
   @Override
-  protected Predicate<Discount> filtering() {
+  public Predicate<DiscountInfo> filtering() {
     return discount -> discount.getView() > 4000
         || (discount.getRecommendUp() > 4 && discount.getRecommendDown() + 2 < discount.getRecommendUp())
         || discount.getComment() > 25;
   }
 
 
-  private List<Discount> pageProcess(String content) {
+  private List<DiscountInfo> pageProcess(String content) {
     Document document = Jsoup.parse(content);
     // 광고를 거르기 위해서 게시물 번호 부분에 img 태그가 없는 tr 태그만 추출
     Elements noImageTds = document.select("#revolution_main_table > tbody > tr > td.baseList-space.baseList-numb:not(:has(img))");
@@ -67,7 +67,7 @@ public class PpomppuHandler extends AbstractDiscountHandler {
         .toList();
   }
 
-  private Discount parseElement(org.jsoup.nodes.Element element) {
+  private DiscountInfo parseElement(org.jsoup.nodes.Element element) {
 
     // 제목에서 품절여부 체크
     Element seqElements = element.select(".baseList-title span").first();
@@ -75,8 +75,9 @@ public class PpomppuHandler extends AbstractDiscountHandler {
       return null;
     }
 
-    return Discount.builder()
+    return DiscountInfo.builder()
         .redisKey(Integer.parseInt(element.selectFirst(".baseList-numb").text()))
+        .type(DiscountType.PPOMPPU)
         .title(seqElements.text())
         .link(getLink(element))
         .view(Integer.parseInt(element.selectFirst(".baseList-views").text()))
@@ -108,7 +109,7 @@ public class PpomppuHandler extends AbstractDiscountHandler {
       newUrl.append("&no=").append(params.get("no"));
     }
 
-    return PPOMPPU_BASE_URL + newUrl.toString();
+    return BASE_URL + newUrl.toString();
   }
 
 
