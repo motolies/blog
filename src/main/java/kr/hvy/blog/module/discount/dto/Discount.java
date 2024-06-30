@@ -1,4 +1,4 @@
-package kr.hvy.blog.module.ppomppu.dto;
+package kr.hvy.blog.module.discount.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,11 +12,11 @@ import org.springframework.data.redis.core.RedisHash;
 @NoArgsConstructor
 @Data
 @Builder
-@RedisHash(value = "ppomppuN", timeToLive = 60 * 60 * 24 * 3)
-public class Ppomppu {
+@RedisHash(value = "discountN", timeToLive = 60 * 60 * 24 * 3)
+public class Discount {
 
   @Id
-  private int seq;
+  private int redisKey;
   private String title;
   private String link;
   private int view;

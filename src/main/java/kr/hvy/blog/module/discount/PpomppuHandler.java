@@ -1,84 +1,57 @@
-package kr.hvy.blog.infra.scheduler;
+package kr.hvy.blog.module.discount;
 
-import io.github.motolies.scheduler.AbstractScheduler;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import kr.hvy.blog.infra.notify.SlackChannelType;
-import kr.hvy.blog.infra.notify.SlackMessenger;
-import kr.hvy.blog.module.ppomppu.PpomppuRepository;
-import kr.hvy.blog.module.ppomppu.dto.Ppomppu;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import kr.hvy.blog.module.discount.dto.Discount;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Slf4j
-@Profile("prod")
 @Component
-@RequiredArgsConstructor
-public class PpomppuScheduler extends AbstractScheduler {
-
-  private final RestTemplate restTemplateLogging;
-  private final PpomppuRepository ppomppuRepository;
+public class PpomppuHandler extends AbstractDiscountHandler {
 
   private final String PPOMPPU_BASE_URL = "https://www.ppomppu.co.kr/zboard/";
   private final String PPOMPPU_BOARD_URL = PPOMPPU_BASE_URL + "zboard.php?id=ppomppu&page={0}";
 
-
-  @Scheduled(cron = "${scheduler.ppomppu.cron-expression}")    // 10분마다
-  @SchedulerLock(name = "${scheduler.ppomppu.lock-name}", lockAtLeastFor = "PT30S", lockAtMostFor = "PT1M")
-  public void monitoring() {
-
-    proceedScheduler("PPOMPPU")
-        .accept(this::ppomppu);
+  protected PpomppuHandler(RestTemplate restTemplateLogging, DiscountService discountService) {
+    super(restTemplateLogging, discountService);
   }
 
-  private void ppomppu() {
-    try {
-      List<Ppomppu> list = IntStream.range(1, 4)
-          .mapToObj(i -> {
-            String url = MessageFormat.format(PPOMPPU_BOARD_URL, i);
-            String response = restTemplateLogging.getForObject(url, String.class);
-            return pageProcess(response);
-          })
-          .flatMap(List::stream)
-          .filter(Objects::nonNull)
-          .filter(ppomppuProduct -> ppomppuProduct.getView() > 4000
-              || (ppomppuProduct.getRecommendUp() > 4 && ppomppuProduct.getRecommendDown() + 2 < ppomppuProduct.getRecommendUp())
-              || ppomppuProduct.getComment() > 25)
-          .toList();
-
-      List<String> seqList = list.stream().map(p -> String.valueOf(p.getSeq())).toList();
-      List<Ppomppu> savedList = (List<Ppomppu>) ppomppuRepository.findAllById(seqList);
-
-      List<Ppomppu> sendList = list.stream()
-          .filter(ppomppu -> savedList.stream().noneMatch(saved -> saved.getSeq() == ppomppu.getSeq()))
-          .peek(ppomppu -> {
-            SlackMessenger.send(SlackChannelType.HVY_HOT_DEAL, ppomppu.getSlackMessage(), false);
-            ppomppuRepository.save(ppomppu);
-          }).toList();
-
-
-    } catch (Exception e) {
-      SlackMessenger.send(e);
-      log.error(e.getMessage(), e);
-    }
+  @Override
+  protected List<Discount> getList() {
+    return IntStream.range(1, 4)
+        .mapToObj(i -> {
+          String url = MessageFormat.format(PPOMPPU_BOARD_URL, i);
+          String response = restTemplateLogging.getForObject(url, String.class);
+          return pageProcess(response);
+        })
+        .flatMap(List::stream)
+        .filter(Objects::nonNull)
+        .filter(discountProduct -> discountProduct.getView() > 4000
+            || (discountProduct.getRecommendUp() > 4 && discountProduct.getRecommendDown() + 2 < discountProduct.getRecommendUp())
+            || discountProduct.getComment() > 25)
+        .toList();
   }
 
-  private List<Ppomppu> pageProcess(String content) {
+  @Override
+  protected Predicate<Discount> filtering() {
+    return discount -> discount.getView() > 4000
+        || (discount.getRecommendUp() > 4 && discount.getRecommendDown() + 2 < discount.getRecommendUp())
+        || discount.getComment() > 25;
+  }
+
+
+  private List<Discount> pageProcess(String content) {
     Document document = Jsoup.parse(content);
     // 광고를 거르기 위해서 게시물 번호 부분에 img 태그가 없는 tr 태그만 추출
     Elements noImageTds = document.select("#revolution_main_table > tbody > tr > td.baseList-space.baseList-numb:not(:has(img))");
@@ -94,7 +67,7 @@ public class PpomppuScheduler extends AbstractScheduler {
         .toList();
   }
 
-  private Ppomppu parseElement(org.jsoup.nodes.Element element) {
+  private Discount parseElement(org.jsoup.nodes.Element element) {
 
     // 제목에서 품절여부 체크
     Element seqElements = element.select(".baseList-title span").first();
@@ -102,8 +75,8 @@ public class PpomppuScheduler extends AbstractScheduler {
       return null;
     }
 
-    return Ppomppu.builder()
-        .seq(Integer.parseInt(element.selectFirst(".baseList-numb").text()))
+    return Discount.builder()
+        .redisKey(Integer.parseInt(element.selectFirst(".baseList-numb").text()))
         .title(seqElements.text())
         .link(getLink(element))
         .view(Integer.parseInt(element.selectFirst(".baseList-views").text()))
@@ -173,6 +146,5 @@ public class PpomppuScheduler extends AbstractScheduler {
       return Integer.parseInt(comment.text());
     }
   }
-
 
 }
